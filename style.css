@@ -1,316 +1,46 @@
-:root {
-    /* Colores del Tema */
-    --primary-color: #61dafb;
-    --secondary-color: #f39c12;
-    --background-dark: #282c34;
-    --game-background: #1a1a1a;
-    --text-color: white;
-    --button-hover: #e67e22;
-    --button-active: #c06318;
-    --shadow-color: rgba(0, 0, 0, 0.3);
-}
-
-/* Base styles */
-* {
-    box-sizing: border-box; /* Incluye padding y border en el ancho/alto */
-}
-
+/* --- Base y Reset --- */
 body {
     margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #222;
+    color: #eee;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: var(--background-dark);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-color);
-    overflow: hidden;
-    gap: 50px;
+    overflow: hidden; /* Evita barras de desplazamiento */
 }
 
-/* Game Container */
-#game-container {
-    width: 60vw;
-    height: 90vh;
-    max-width: 650px;
-    max-height: 850px;
-    background-color: var(--game-background);
-    border: 5px solid var(--primary-color);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(97, 218, 251, 0.5);
-    animation: colorChange 10s infinite alternate ease-in-out;
-}
-
-#score-board {
-    padding: 10px;
-    text-align: center;
-    background-color: #333;
-    border-bottom: 2px solid var(--primary-color);
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-#game-area {
-    width: 100%;
-    height: calc(100% - 50px);
-    position: relative;
-    /* Puedes añadir un background-image aquí para el fondo del juego */
-    /* background-image: url('assets/images/game_background.png'); */
-    /* background-size: cover; */
-    /* background-position: center bottom; */
-    /* background-repeat: no-repeat; */
-}
-
-#basket {
-    width: 80px;
-    height: 20px;
-    background-color: #e0ac40; /* Color temporal, reemplaza con imagen */
-    /* background-image: url('assets/images/basket.png'); */
-    /* background-size: contain; */
-    /* background-repeat: no-repeat; */
-    /* background-position: center; */
-    position: absolute;
-    bottom: 10px;
-    left: calc(50% - 40px);
-    border-radius: 5px;
-}
-
-.fruit {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%; /* Puedes quitarlo si usas imágenes que no son círculos */
-    position: absolute;
-    top: 0;
-    left: var(--start-left); /* Usa la variable CSS para la posición inicial */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    background-size: cover; /* Ajusta la imagen al tamaño del div */
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* Specific fruit colors (these will be replaced by background-image paths in JS later) */
-/* For now, they can serve as placeholders or default colors if no image is loaded */
-.fruit.apple { background-color: #ff0000; }
-.fruit.banana { background-color: #ffe135; }
-.fruit.orange { background-color: #ffa500; }
-.fruit.rotten_apple { background-color: #7b3f00; border-radius: 20%; } /* Ejemplo de fruta mala */
-.fruit.poison_berry { background-color: #8a2be2; } /* Ejemplo de fruta mala */
-
-
-/* Game Over Screen */
-#game-over {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 1.5em;
-}
-
-#game-over h2 {
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    font-size: 2em;
-}
-
-.game-over-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/* Styles for username input */
-.user-name-input {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.user-name-input label {
-    font-size: 1.2em;
-    color: var(--text-color);
-}
-
-.user-name-input input[type="text"] {
-    padding: 10px 15px;
-    font-size: 1.1em;
-    background-color: #333;
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    outline: none;
-    text-align: center;
-    width: 80%;
-    max-width: 250px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.user-name-input input[type="text"]::placeholder {
-    color: #aaa;
-}
-
-.user-name-input input[type="text"]:focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
-}
-
-
-/* Buttons */
-#restart-button {
-    padding: 12px 25px;
-    font-size: 1.2em;
-    background-color: var(--primary-color);
-    color: var(--game-background);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-#restart-button:hover {
-    background-color: #4fa3d7;
-    transform: translateY(-2px);
-}
-
-#restart-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.secondary-button {
-    padding: 10px 20px;
-    font-size: 1.1em;
-    background-color: #555;
-    color: var(--text-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 3px 5px var(--shadow-color);
-}
-
-.secondary-button:hover {
-    background-color: #777;
-    transform: translateY(-2px);
-}
-
-.secondary-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 3px var(--shadow-color);
-}
-
-.menu-button {
-    padding: 15px 30px;
-    font-size: 1.5em;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin: 10px 0;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 5px 15px var(--shadow-color);
-    min-width: 220px;
-}
-
-.menu-button:hover {
-    background-color: var(--button-hover);
-    transform: translateY(-3px);
-}
-
-.menu-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px var(--shadow-color);
-}
-
-/* Estilo para botones deshabilitados */
-.menu-button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    opacity: 0.7;
-    box-shadow: none;
-    transform: none;
-}
-
-
-#game-controls {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    height: 90vh;
-    max-height: 850px;
-}
-
-#pause-button {
-    padding: 12px 25px;
-    font-size: 1.1em;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-#pause-button:hover {
-    background-color: var(--button-hover);
-    transform: translateY(-2px);
-}
-
-#pause-button:active {
-    transform: translateY(0);
-}
-
-#pause-button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    opacity: 0.7;
-    box-shadow: none;
-    transform: none;
-}
-
-/* Utility classes */
 .hidden {
-    display: none !important;
+    display: none !important; /* Oculta elementos completamente */
 }
 
 .blurred {
     filter: blur(5px);
-    transition: filter 0.3s ease-in-out;
+    transition: filter 0.3s ease-out;
 }
 
-/* --- Loading Screen --- */
-#loading-screen {
+/* --- Pantalla de Carga --- */
+.loading-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--background-dark);
-    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: white;
     font-size: 1.5em;
-    z-index: 1000;
     transition: opacity 0.5s ease-out;
+    z-index: 1000; /* Asegura que esté por encima de todo */
 }
 
 .spinner {
     border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid var(--primary-color);
+    border-top: 8px solid #fff;
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -318,582 +48,527 @@ body {
     margin-bottom: 20px;
 }
 
-/* --- Main Menu --- */
-#main-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-dark);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 999;
-}
-
-#main-menu h1 {
-    font-size: 3.5em;
-    color: var(--primary-color);
-    margin-bottom: 40px;
-    text-shadow: 0 0 15px rgba(97, 218, 251, 0.6);
-    letter-spacing: 2px;
-}
-
-/* --- Options, Highscores, Rating, Game Modes, Suggestions Menus (Common Styles) --- */
-#options-menu,
-#highscores-menu,
-#rating-menu,
-#game-modes-menu,
-#suggestions-menu { /* Añadido: suggestions-menu */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-dark);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 998;
-}
-
-#options-menu h2,
-#highscores-menu h2,
-#rating-menu h2,
-#game-modes-menu h2,
-#suggestions-menu h2 { /* Añadido: suggestions-menu */
-    font-size: 2.8em;
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
-}
-
-.option-group {
-    margin-bottom: 25px;
-    font-size: 1.3em;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.option-group label {
-    font-weight: bold;
-}
-
-.option-group select {
-    padding: 10px 18px;
-    font-size: 1.1em;
-    background-color: #333;
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    cursor: pointer;
-    appearance: none; /* Remove default select arrow */
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2361dafb%22%20d%3D%22M287%2C197.962L146.206%2C57.169L5.413%2C197.962h281.588z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
-    background-repeat: no-repeat;
-    background-position: right 10px top 50%;
-    background-size: 1em auto;
-}
-
-.option-group select:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
-}
-
-/* High Scores List */
-#high-scores-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 30px;
-    font-size: 1.4em;
-    max-height: 400px;
-    overflow-y: auto;
-    width: 80%;
-    max-width: 400px;
-    background-color: #333;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 5px 15px var(--shadow-color);
-}
-
-#high-scores-list li {
-    padding: 10px 0;
-    border-bottom: 1px dashed #555;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#high-scores-list li:last-child {
-    border-bottom: none;
-}
-
-#high-scores-list li span:first-child {
-    font-weight: bold;
-    color: var(--primary-color);
-}
-#high-scores-list li span:last-child {
-    color: var(--secondary-color);
-}
-
-
-/* --- Rating Stars --- */
-#stars-container {
-    font-size: 3.5em;
-    color: #ccc;
-    margin-bottom: 20px;
-    cursor: pointer;
-    display: flex;
-    gap: 5px; /* Spacing between stars */
-}
-
-.star {
-    transition: color 0.2s ease-in-out, transform 0.1s ease;
-}
-
-.star.active,
-.star:hover {
-    color: var(--secondary-color);
-    transform: translateY(-3px);
-}
-
-.star:hover ~ .star:not(.active) {
-    color: #ccc;
-    transform: translateY(0);
-}
-
-#rating-message {
-    font-size: 1.2em;
-    margin-top: 10px;
-    height: 1.5em; /* Reserve space to prevent layout shift */
-    color: var(--primary-color);
-    font-style: italic;
-}
-
-/* Animations */
-@keyframes colorChange {
-    0% { border-color: var(--primary-color); }
-    25% { border-color: #ff00ff; }
-    50% { border-color: #00ff00; }
-    75% { border-color: #ffff00; }
-    100% { border-color: var(--primary-color); }
-}
-
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-/* --- Game Modes Menu specific styles --- */
+/* --- Estilos Generales de Menú --- */
+.menu {
+    background-color: #333;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-sizing: border-box; /* Para incluir padding en el ancho */
+    display: flex; /* Asegura que los botones se apilen si son flex-direction: column */
+    flex-direction: column;
+    gap: 15px; /* Espacio entre los elementos del menú */
+    min-height: 300px; /* Altura mínima para los menús en general */
+}
 
-/* Estilos para el contenedor de cada modo */
-#game-modes-menu .mode-selection-group {
-    display: flex;
-    flex-direction: row; /* Alinea botón y descripción horizontalmente */
-    align-items: center; /* Centra verticalmente */
-    justify-content: center; /* Centra el grupo en la pantalla */
+.menu h1, .menu h2 {
+    color: #ffd700; /* Color dorado */
     margin-bottom: 20px;
-    width: 100%;
-    position: relative; /* Clave para el posicionamiento absoluto de la descripción */
-    gap: 20px; /* Espacio entre el botón y la descripción cuando no está extendida */
-    min-height: 80px; /* Asegura un espacio mínimo para la descripción */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
-/* Ajuste del botón dentro del grupo */
-#game-modes-menu .mode-selection-group .menu-button {
-    margin-bottom: 0; /* Quita el margen inferior preexistente */
-    flex-shrink: 0; /* Evita que el botón se encoja */
+.menu-button, .game-button, .back-button {
+    background-color: #4CAF50; /* Verde vibrante */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    width: 100%; /* Ocupa todo el ancho disponible */
+    box-sizing: border-box;
 }
 
-/* Estilos para la descripción del modo (La "extensión") */
-.mode-description {
-    background-color: rgba(33, 37, 43, 0.95); /* Fondo semitransparente oscuro */
-    border: 2px solid var(--primary-color);
-    border-radius: 8px;
-    padding: 15px 20px;
-    color: #f0f0f0; /* Texto claro */
-    font-size: 0.95em;
-    text-align: left; /* Alinea el texto a la izquierda dentro de la descripción */
-    line-height: 1.5;
-    max-width: 350px; /* Ancho máximo de la caja de descripción */
-    box-shadow: 0 4px 10px var(--shadow-color);
-    position: absolute; /* Se posiciona relativo a .mode-selection-group */
-    /* Ajusta esta distancia para que aparezca a la derecha del centro del botón.
-       50% es el centro del padre, +120px lo desplaza a la derecha.
-       Ajusta '120px' si tu botón es más ancho o quieres más/menos espacio. */
-    left: calc(50% + 120px);
-    /* Esta transformación inicial lo desplaza a la izquierda, dando un efecto de "aparecer" */
-    transform: translateX(-10%);
-    opacity: 0; /* Empieza oculto */
-    visibility: hidden; /* También oculto para accesibilidad y evitar interacciones */
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out; /* Animación suave */
-    z-index: 10; /* Asegura que esté por encima de otros elementos */
+.menu-button:hover, .game-button:hover, .back-button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
 }
 
-/* Estilos para el encabezado dentro de la descripción */
-.mode-description h3 {
-    color: var(--secondary-color);
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 1.3em;
+.menu-button:active, .game-button:active, .back-button:active {
+    transform: translateY(0);
 }
 
-/* Cuando se muestre la descripción (JavaScript añade la clase 'visible') */
-.mode-description.visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0); /* Vuelve a su posición original, animando la "entrada" */
+.back-button {
+    background-color: #555;
+    margin-top: 10px;
 }
 
-/* --- Explosion Effect --- */
-.explosion-effect {
-    position: absolute;
-    width: 30px;  /* Tamaño inicial de la partícula de explosión, ajustado para que coincida con FRUIT_WIDTH */
-    height: 30px; /* Tamaño inicial de la partícula de explosión, ajustado para que coincida con FRUIT_HEIGHT */
-    background-color: var(--secondary-color); /* Color de la explosión */
+.back-button:hover {
+    background-color: #666;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.setting-item label {
+    margin-right: 10px;
+    white-space: nowrap; /* Evita que el texto se rompa */
+}
+
+.setting-item input[type="number"],
+.setting-item select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background-color: #444;
+    color: white;
+    width: 100px; /* Ancho fijo para inputs numéricos/selects */
+    text-align: center;
+}
+
+.setting-item input[type="range"] {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    margin: 0 10px;
+    -webkit-appearance: none; /* Eliminar estilo predeterminado de slider */
+    appearance: none; /* Estándar para compatibilidad */
+    width: 100%; /* Para compatibilidad */
+    height: 8px;
+    background: #666;
+    border-radius: 5px;
+    outline: none;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    opacity: 1;
-    transform: scale(0);
-    animation: explode 0.5s ease-out forwards; /* Animación de explosión */
-    z-index: 5; /* Asegúrate de que se vea por encima de las frutas y el fondo */
+    background: #ffd700; /* Dorado */
+    cursor: grab;
+    border: 2px solid #fff;
 }
 
-@keyframes explode {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-        box-shadow: 0 0 10px var(--secondary-color), 0 0 20px var(--secondary-color);
-    }
-    50% {
-        transform: scale(1.5); /* Se expande */
-        opacity: 0.7;
-        box-shadow: 0 0 15px var(--secondary-color), 0 0 30px var(--secondary-color);
-    }
-    100% {
-        transform: scale(2); /* Se expande un poco más */
-        opacity: 0; /* Se desvanece */
-        box-shadow: 0 0 20px var(--secondary-color), 0 0 40px var(--secondary-color);
-    }
+.slider-value {
+    min-width: 30px; /* Asegura espacio para el número */
+    text-align: right;
 }
 
-/* --- Custom Mode Settings Menu --- */
-#custom-mode-settings {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-dark);
-    color: var(--text-color);
+/* --- Modos de Juego y Descripciones --- */
+.mode-selection {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 998;
-}
-
-#custom-mode-settings h2 {
-    font-size: 2.8em;
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
-}
-
-.setting-group {
-    margin-bottom: 20px;
-    font-size: 1.3em;
-    display: flex;
-    flex-direction: column; /* Apila label y input */
-    align-items: center;
     gap: 10px;
-    width: 80%;
-    max-width: 400px;
+    margin-bottom: 20px;
 }
 
-.setting-group label {
-    font-weight: bold;
+.mode-button {
+    position: relative; /* Para posicionar la descripción */
+    overflow: hidden; /* Asegura que la descripción no se desborde al inicio */
+    padding: 15px; /* Aumenta el padding del botón para más espacio inicial */
+    text-align: left; /* Alinea el texto del botón a la izquierda */
+    display: flex;
+    flex-direction: column; /* Permite apilar el texto del botón y la descripción */
+    align-items: flex-start; /* Alinea los elementos internos a la izquierda */
+}
+
+.mode-button strong {
+    display: block; /* Asegura que el nombre del modo ocupe una línea completa */
     margin-bottom: 5px;
 }
 
-.setting-group input[type="number"],
-.setting-group input[type="range"] {
+.mode-description {
+    position: relative; /* Cambiado a relative para que fluya con el botón */
     width: 100%;
-    padding: 10px 15px;
-    font-size: 1.1em;
-    background-color: #333;
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    outline: none;
-    text-align: center;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.setting-group input[type="number"]:focus,
-.setting-group input[type="range"]:focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
-}
-
-.setting-group input[type="range"] {
-    -webkit-appearance: none; /* Override default look */
-    appearance: none;
-    height: 8px;
-    background: #555;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente más claro */
+    color: #eee;
+    padding: 10px;
+    box-sizing: border-box;
+    transform: translateY(100%); /* Inicialmente fuera de vista */
+    transition: transform 0.3s ease-out;
+    font-size: 0.85em;
+    text-align: left;
+    margin-top: 5px; /* Espacio entre el nombre del modo y la descripción */
     border-radius: 5px;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
 }
 
-.setting-group input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: var(--primary-color);
+.mode-description.visible {
+    transform: translateY(0); /* Desliza hacia abajo para revelar */
+}
+
+.coming-soon-button {
+    background-color: #888;
+    cursor: not-allowed;
+    position: relative; /* Para la etiqueta "Próximamente" */
+}
+
+.coming-soon-button::after {
+    content: "PRÓXIMAMENTE";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* --- Puntuaciones Altas --- */
+.high-scores-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.high-scores-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95em;
+}
+
+.high-scores-list li:last-child {
+    border-bottom: none;
+}
+
+.high-scores-list li span:first-child {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.clear-button {
+    background-color: #dc3545; /* Rojo para borrar */
+}
+
+.clear-button:hover {
+    background-color: #c82333;
+}
+
+/* --- Calificación de Estrellas --- */
+.stars-container {
+    font-size: 2.5em;
+    color: #888; /* Estrellas inactivas */
+    margin: 20px 0;
+}
+
+.stars-container .star {
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(97, 218, 251, 0.7);
+    transition: color 0.2s ease;
 }
 
-.setting-group input[type="range"]::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(97, 218, 251, 0.7);
+.stars-container .star.active {
+    color: #ffd700; /* Estrellas activas */
 }
 
-.setting-group span {
-    font-size: 1.1em;
-    color: var(--secondary-color);
-    margin-top: 5px;
+#rating-message {
+    font-style: italic;
+    margin-top: 10px;
 }
 
-/* --- Suggestions Menu --- */
-#suggestions-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--background-dark);
-    color: var(--text-color);
+/* --- Sugerencias --- */
+#suggestion-form {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 998;
-}
-
-#suggestions-menu h2 {
-    font-size: 2.8em;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
-}
-
-#suggestions-menu p {
-    font-size: 1.2em;
-    margin-bottom: 30px;
-    max-width: 500px;
-    line-height: 1.5;
+    gap: 15px;
 }
 
 #suggestion-text {
-    width: 80%;
-    max-width: 500px;
-    height: 150px;
-    padding: 15px;
-    font-size: 1.1em;
-    background-color: #333;
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    outline: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background-color: #444;
+    color: white;
     resize: vertical; /* Permite redimensionar verticalmente */
-    margin-bottom: 10px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    font-size: 1em;
 }
 
-#suggestion-text:focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+.char-count {
+    text-align: right;
+    font-size: 0.85em;
+    color: #bbb;
 }
 
-#char-count {
-    font-size: 0.9em;
-    color: #ccc;
+/* --- Contenedor del Juego --- */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el área de juego y HUD */
+    justify-content: center;
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative; /* Para posicionar el blur */
+    max-width: 600px; /* Limita el ancho en pantallas grandes */
+    width: 95%; /* Responsivo */
+    min-height: 600px; /* Altura mínima del contenedor del juego */
+}
+
+.game-area {
+    width: 100%; /* Se adapta al contenedor */
+    max-width: 500px; /* Ancho máximo para el área de juego principal */
+    height: 400px; /* Altura del área de caída */
+    background-color: #000; /* Fondo del área de juego */
+    border: 2px solid #555;
+    position: relative;
+    overflow: hidden; /* Crucial para las frutas que caen */
     margin-bottom: 20px;
-    align-self: center; /* Centrar el contador */
+    border-radius: 8px;
+}
+
+.game-hud {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1.2em;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.score-display, .lives-display, .high-score-indicator {
+    padding: 5px 10px;
+    background-color: #444;
+    border-radius: 5px;
+}
+
+.score-display span, .lives-display span, .high-score-indicator span {
+    color: #ffd700; /* Dorado para los números */
+    font-weight: bold;
+}
+
+/* --- Canasta --- */
+.basket {
+    width: 80px; /* Ancho de la canasta */
+    height: 20px; /* Altura de la canasta */
+    background-color: #8B4513; /* Color marrón de la canasta */
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Centrar */
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    z-index: 10; /* Asegura que esté por encima de las frutas */
+}
+
+/* --- Frutas --- */
+.fruit {
+    width: 30px; /* FRUIT_WIDTH */
+    height: 30px; /* FRUIT_HEIGHT */
+    position: absolute;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 5; /* Asegura que estén detrás de la canasta pero visibles */
+}
+
+/* Clases para tipos de fruta (ejemplos) */
+.apple { background-image: url('assets/apple.png'); }
+.banana { background-image: url('assets/banana.png'); }
+.orange { background-image: url('assets/orange.png'); }
+.rotten_apple { background-image: url('assets/rotten_apple.png'); } /* Fruta mala */
+.poison_berry { background-image: url('assets/poison_berry.png'); } /* Fruta mala */
+
+/* --- Explosión --- */
+.explosion-effect {
+    width: 30px; /* EXPLOSION_SIZE */
+    height: 30px; /* EXPLOSION_SIZE */
+    position: absolute;
+    background-image: url('assets/explosion.png'); /* Imagen de explosión */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: explode 0.3s forwards; /* Animación de 0.3s y se mantiene al final */
+    z-index: 10;
+}
+
+@keyframes explode {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
 }
 
 
-/* Media Queries for Responsiveness */
+/* --- Pantalla de Game Over --- */
+.game-over-screen {
+    background-color: #333;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: absolute; /* Para que aparezca encima del juego */
+    z-index: 20;
+}
+
+.game-over-screen h2 {
+    color: #dc3545; /* Rojo */
+    margin-bottom: 10px;
+}
+
+.game-over-screen p {
+    font-size: 1.3em;
+    margin-bottom: 20px;
+}
+
+.score-save-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.score-save-section label {
+    font-size: 1.1em;
+}
+
+.score-save-section input[type="text"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background-color: #444;
+    color: white;
+    font-size: 1em;
+    text-align: center;
+}
+
+/* --- Controles Móviles (Botones Táctiles) --- */
+.game-controls {
+    display: flex; /* Flexbox para colocar los botones */
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px; /* Espacio debajo del HUD */
+}
+
+.mobile-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(76, 175, 80, 0.8); /* Verde semi-transparente */
+    color: white;
+    font-size: 3em;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    user-select: none; /* Evita selección de texto al tocar */
+    -webkit-tap-highlight-color: transparent; /* Elimina el resalte al tocar en iOS */
+}
+
+.mobile-button:active {
+    background-color: rgba(69, 160, 73, 1);
+}
+
+/* Iconos de flecha (puedes usar Font Awesome o imágenes, aquí un ejemplo básico) */
+.mobile-button.left::before { content: '◀'; }
+.mobile-button.right::before { content: '▶'; }
+
+
+/* --- Media Queries para Responsividad --- */
 @media (max-width: 768px) {
-    body {
-        flex-direction: column;
-        gap: 20px;
+    .game-container {
+        padding: 15px;
     }
 
-    #game-container {
-        width: 90vw;
-        height: 70vh;
-        max-height: 600px;
+    .game-area {
+        height: 350px;
     }
 
-    #game-controls {
-        height: auto;
-        padding-bottom: 20px;
+    .basket {
+        width: 70px;
     }
 
-    #main-menu h1 {
+    .menu {
+        padding: 20px;
+    }
+
+    .menu-button, .game-button, .back-button {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
+
+    .game-hud {
+        font-size: 1em;
+    }
+
+    .score-save-section input[type="text"] {
+        font-size: 0.9em;
+    }
+
+    .mobile-button {
+        width: 70px;
+        height: 70px;
         font-size: 2.5em;
-        margin-bottom: 30px;
-    }
-
-    .menu-button {
-        padding: 12px 25px;
-        font-size: 1.3em;
-        min-width: 180px;
-    }
-
-    #options-menu h2,
-    #highscores-menu h2,
-    #rating-menu h2,
-    #game-modes-menu h2,
-    #suggestions-menu h2 { /* Añadido: suggestions-menu */
-        font-size: 2em;
-    }
-
-    .option-group, #high-scores-list, #stars-container {
-        font-size: 1.1em;
-        width: 90%;
-    }
-
-    #stars-container {
-        font-size: 3em;
-    }
-
-    /* En pantallas pequeñas, apilar los elementos de selección de modo */
-    #game-modes-menu .mode-selection-group {
-        flex-direction: column; /* Vuelve a apilar el botón y la descripción */
-        gap: 10px; /* Menos espacio entre ellos */
-    }
-
-    /* La descripción se posiciona estáticamente debajo del botón */
-    .mode-description {
-        position: static; /* Vuelve al flujo normal de documentos */
-        transform: none; /* Quita cualquier transformación de desplazamiento */
-        max-width: 90%; /* Ajusta el ancho para móviles */
-        margin-top: 10px; /* Añade espacio arriba */
-        text-align: center; /* Centra el texto en móviles */
-    }
-
-    /* Opcional: Ajusta el ancho de los botones en móviles si es necesario */
-    #game-modes-menu .menu-button {
-        min-width: 180px; /* Mantén un ancho razonable para el botón */
-    }
-
-    /* Ajustes para el input de username en móviles */
-    .user-name-input input[type="text"] {
-        width: 90%; /* Más ancho en móviles */
-        max-width: 200px;
-    }
-
-    #custom-mode-settings h2 {
-        font-size: 2em;
-    }
-    .setting-group {
-        font-size: 1.1em;
-    }
-    .setting-group input[type="number"],
-    .setting-group input[type="range"] {
-        font-size: 1em;
-    }
-
-    #suggestions-menu p {
-        font-size: 1em;
-    }
-    #suggestion-text {
-        width: 90%;
-        font-size: 1em;
-        height: 120px;
     }
 }
 
 @media (max-width: 480px) {
-    #game-container {
-        width: 95vw;
-        height: 65vh;
-        max-height: 500px;
+    .game-container {
+        padding: 10px;
     }
 
-    #score-board {
-        font-size: 1em;
-        padding: 8px;
+    .game-area {
+        height: 300px;
     }
 
-    #basket {
-        width: 70px;
+    .basket {
+        width: 60px;
     }
 
-    .fruit {
-        width: 25px;
-        height: 25px;
+    .menu {
+        padding: 15px;
+        gap: 10px;
     }
 
-    #game-over h2 {
+    .menu h1, .menu h2 {
         font-size: 1.8em;
     }
 
-    #restart-button, .secondary-button {
+    .menu-button, .game-button, .back-button {
+        font-size: 0.9em;
         padding: 8px 15px;
-        font-size: 1em;
     }
 
-    #pause-button {
-        padding: 10px 20px;
-        font-size: 1em;
+    .game-hud {
+        font-size: 0.9em;
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan si la pantalla es muy pequeña */
+        justify-content: center;
+        gap: 5px;
     }
 
-    #main-menu h1 {
+    .mobile-button {
+        width: 60px;
+        height: 60px;
         font-size: 2em;
-        margin-bottom: 25px;
     }
+}
 
-    .menu-button {
-        padding: 10px 20px;
-        font-size: 1.2em;
-        min-width: 160px;
-    }
-
-    #options-menu h2,
-    #highscores-menu h2,
-    #rating-menu h2,
-    #game-modes-menu h2,
-    #suggestions-menu h2 { /* Añadido: suggestions-menu */
-        font-size: 1.8em;
-    }
-
-    .option-group, #high-scores-list, #stars-container {
-        font-size: 1em;
-    }
-
-    #stars-container {
-        font-size: 2.5em;
+/* Para ocultar los controles móviles en pantallas grandes si no los quieres */
+@media (min-width: 769px) {
+    #game-controls {
+        display: none !important;
     }
 }

@@ -68,16 +68,20 @@ const backFromRatingButton = document.getElementById('back-from-rating');
 
 // Suggestions Menu Elements
 const suggestionsMenu = document.getElementById('suggestions-menu');
-const suggestionForm = document.getElementById('suggestion-form'); // ¡Importante: Referencia al formulario!
+const suggestionForm = document.getElementById('suggestion-form');
 const suggestionTextarea = document.getElementById('suggestion-text');
 const charCountSpan = document.getElementById('char-count');
-const submitSuggestionButton = document.getElementById('submit-suggestion-button'); // Todavía se usa para validación, aunque el listener esté en el formulario
+const submitSuggestionButton = document.getElementById('submit-suggestion-button');
 const backFromSuggestionsButton = document.getElementById('back-from-suggestions');
 
 // Game Over Buttons
 const backToMenuFromGameoverButton = document.getElementById('back-to-menu-from-gameover');
 const usernameInput = document.getElementById('username');
 const saveScoreButton = document.getElementById('save-score-button');
+
+// Mobile Controls Elements
+const leftButton = document.getElementById('left-button');
+const rightButton = document.getElementById('right-button');
 
 
 // --- Game Variables ---
@@ -114,6 +118,9 @@ let customLives = 3;
 let customFruitSpeed = 3;
 let customBasketSpeed = 20;
 
+// Nueva variable de estado para simplificar las condiciones de "juego activo"
+let isGameActiveFlag = false;
+
 // --- Game Logic Functions ---
 
 /**
@@ -149,9 +156,9 @@ function applyDifficulty(difficulty) {
 
     console.log(`Difficulty set: ${difficulty}, Fall Speed: ${fruitFallSpeed}, Generation Delay: ${fruitGenerationDelay}ms, Lives: ${initialLives}`);
 
-    if (!gamePaused && lives > 0 && gameOverScreen.classList.contains('hidden') && mainMenu.classList.contains('hidden')) {
-        startMainGameLoop();
-    }
+    // Eliminado: No se llama a startMainGameLoop aquí para evitar comportamientos inesperados
+    // si la dificultad cambia mientras el juego ya está en progreso o en un menú.
+    // startGame() o resumeGame() son responsables de iniciar el bucle.
 }
 
 /**
@@ -188,16 +195,7 @@ function startGame() {
     fallingFruits = [];
 
     gameOverScreen.classList.add('hidden');
-    gamePaused = false;
-    pauseButton.textContent = 'Pausar';
-    pauseButton.disabled = false;
-
-    loadHighScores();
-    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
-
-    gameContainer.classList.remove('blurred');
-
-    mainMenu.classList.add('hidden');
+    mainMenu.classList.add('hidden'); // Asegúrate de que el menú principal se oculte
     optionsMenu.classList.add('hidden');
     highscoresMenu.classList.add('hidden');
     ratingMenu.classList.add('hidden');
@@ -205,8 +203,17 @@ function startGame() {
     customModeSettings.classList.add('hidden');
     suggestionsMenu.classList.add('hidden');
 
-    gameContainer.style.display = 'flex';
-    document.getElementById('game-controls').style.display = 'flex';
+    gameContainer.classList.remove('blurred');
+    gameContainer.style.display = 'flex'; // Asegura que el contenedor del juego sea visible
+    document.getElementById('game-controls').style.display = 'flex'; // Asegura que los controles móviles sean visibles
+
+    gamePaused = false;
+    pauseButton.textContent = 'Pausar';
+    pauseButton.disabled = false;
+    isGameActiveFlag = true; // El juego está activo
+
+    loadHighScores();
+    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
 
     startMainGameLoop();
 }
@@ -216,11 +223,8 @@ function startGame() {
  * @param {KeyboardEvent} e - The keyboard event object.
  */
 function moveBasket(e) {
-    if (gamePaused || lives <= 0 || !gameOverScreen.classList.contains('hidden') ||
-        !mainMenu.classList.contains('hidden') || !optionsMenu.classList.contains('hidden') ||
-        !highscoresMenu.classList.contains('hidden') || !ratingMenu.classList.contains('hidden') ||
-        !gameModesMenu.classList.contains('hidden') || !customModeSettings.classList.contains('hidden') ||
-        !suggestionsMenu.classList.contains('hidden')) {
+    // Simplificación de la condición de movimiento usando isGameActiveFlag
+    if (!isGameActiveFlag || gamePaused || lives <= 0) {
         return;
     }
 
@@ -260,9 +264,6 @@ function createFruit() {
     }
 
     fruitElement.classList.add('fruit', fruitTypeClass);
-
-    // If you plan to use images, uncomment and set paths:
-    // fruitElement.style.backgroundImage = `url('assets/images/${fruitTypeClass}.png')`;
 
     const startLeft = Math.random() * (gameArea.offsetWidth - FRUIT_WIDTH);
     fruitElement.style.left = `${startLeft}px`;
@@ -317,7 +318,7 @@ function gameLoop() {
             // Fruit caught
             if (fruit.isGood) {
                 score++;
-                if (currentGameMode === 'survival' && lives < initialLives) {
+                if (currentGameMode === 'survival' && lives < initialLives) { // Solo aumenta vidas si no está en el máximo
                     lives++;
                 }
             } else { // Bad fruit (survival mode only)
@@ -332,6 +333,7 @@ function gameLoop() {
 
         } else if (fruit.top > gameArea.offsetHeight) {
             // Fruit fell off screen
+            // Se pierde vida si una fruta buena cae en modo supervivencia, o cualquier fruta en normal/custom
             if (currentGameMode === 'normal' || (currentGameMode === 'survival' && fruit.isGood) || currentGameMode === 'custom') {
                 lives--;
                 createExplosion(fruit.left + fruit.width / 2, gameArea.offsetHeight - 10);
@@ -363,14 +365,15 @@ function startMainGameLoop() {
 
         if (currentGameMode === 'custom') {
             currentFruitFallSpeed = customFruitSpeed;
+            // La generación de frutas se acelera cuanto mayor sea la velocidad personalizada
             currentFruitGenerationDelay = 2000 - (customFruitSpeed * 200);
-            if (currentFruitGenerationDelay < 300) currentFruitGenerationDelay = 300;
+            if (currentFruitGenerationDelay < 300) currentFruitGenerationDelay = 300; // Mínimo de 300ms
         } else {
             currentFruitFallSpeed = fruitFallSpeed;
             currentFruitGenerationDelay = fruitGenerationDelay;
         }
 
-        fruitFallSpeed = currentFruitFallSpeed;
+        fruitFallSpeed = currentFruitFallSpeed; // Actualiza la variable global que usa gameLoop
         fruitGenerationInterval = setInterval(createFruit, currentFruitGenerationDelay);
         gameInterval = setInterval(gameLoop, GAME_LOOP_INTERVAL);
     }
@@ -382,13 +385,14 @@ function startMainGameLoop() {
 function endGame() {
     clearInterval(gameInterval);
     clearInterval(fruitGenerationInterval);
+    isGameActiveFlag = false; // El juego ya no está activo
 
     finalScoreDisplay.textContent = score;
 
     gameOverScreen.classList.remove('hidden');
     pauseButton.disabled = true;
     pauseButton.textContent = 'Pausar';
-    gameContainer.classList.remove('blurred');
+    gameContainer.classList.remove('blurred'); // Asegúrate de quitar el blur
 
     loadHighScores();
     highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
@@ -418,7 +422,7 @@ function saveCurrentScore() {
 
     addScoreToHighScores(score, username);
     saveHighScores();
-    loadHighScores();
+    loadHighScores(); // Recarga para actualizar la lista mostrada en el menú
     highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
 
     scoreSavedThisRound = true;
@@ -431,7 +435,8 @@ function saveCurrentScore() {
  * Pauses the game and applies a visual effect.
  */
 function pauseGame() {
-    if (!gamePaused && lives > 0 && gameOverScreen.classList.contains('hidden')) {
+    // Si el juego está activo y no está pausado y no hay pantalla de game over
+    if (isGameActiveFlag && !gamePaused && gameOverScreen.classList.contains('hidden')) {
         clearInterval(gameInterval);
         clearInterval(fruitGenerationInterval);
         gamePaused = true;
@@ -445,7 +450,8 @@ function pauseGame() {
  * Resumes the game from a paused state.
  */
 function resumeGame() {
-    if (gamePaused && lives > 0 && gameOverScreen.classList.contains('hidden')) {
+    // Si el juego está activo y está pausado y no hay pantalla de game over
+    if (isGameActiveFlag && gamePaused && gameOverScreen.classList.contains('hidden')) {
         startMainGameLoop();
         gamePaused = false;
         pauseButton.textContent = 'Pausar';
@@ -458,11 +464,8 @@ function resumeGame() {
  * Toggles between pause and resume states.
  */
 function togglePause() {
-    if (!gameOverScreen.classList.contains('hidden') || !mainMenu.classList.contains('hidden') ||
-        !optionsMenu.classList.contains('hidden') || !highscoresMenu.classList.contains('hidden') ||
-        !ratingMenu.classList.contains('hidden') || !gameModesMenu.classList.contains('hidden') ||
-        !customModeSettings.classList.contains('hidden') ||
-        !suggestionsMenu.classList.contains('hidden')) {
+    // Simplificación de la condición de pausa usando isGameActiveFlag
+    if (!isGameActiveFlag || lives <= 0) { // Si el juego no está activo o ya perdiste
         return;
     }
 
@@ -543,9 +546,11 @@ function showMainMenu() {
     clearInterval(gameInterval);
     clearInterval(fruitGenerationInterval);
     gamePaused = false;
+    isGameActiveFlag = false; // El juego ya no está activo
 
-    gameContainer.style.display = 'none';
-    document.getElementById('game-controls').style.display = 'none';
+    gameContainer.style.display = 'none'; // Oculta el contenedor del juego
+    document.getElementById('game-controls').style.display = 'none'; // Oculta los controles móviles
+
     gameOverScreen.classList.add('hidden');
     optionsMenu.classList.add('hidden');
     highscoresMenu.classList.add('hidden');
@@ -554,9 +559,9 @@ function showMainMenu() {
     customModeSettings.classList.add('hidden');
     suggestionsMenu.classList.add('hidden');
 
-    mainMenu.classList.remove('hidden');
-    gameContainer.classList.remove('blurred');
-    fallingFruits.forEach(fruit => fruit.element.remove());
+    mainMenu.classList.remove('hidden'); // Muestra el menú principal
+    gameContainer.classList.remove('blurred'); // Asegúrate de quitar el blur
+    fallingFruits.forEach(fruit => fruit.element.remove()); // Limpia las frutas al volver al menú
     fallingFruits = [];
 }
 
@@ -571,10 +576,10 @@ function showGameModesMenu() {
     ratingMenu.classList.add('hidden');
     customModeSettings.classList.add('hidden');
     suggestionsMenu.classList.add('hidden');
-    gameModesMenu.classList.remove('hidden');
+    gameModesMenu.classList.remove('hidden'); // Muestra el menú de modos
 
     setupModeDescriptions();
-    hideAllModeDescriptions();
+    hideAllModeDescriptions(); // Asegura que no haya descripciones visibles al abrir
 }
 
 /**
@@ -588,6 +593,7 @@ function hideAllModeDescriptions() {
 
 /**
  * Sets up events to show/hide descriptions when hovering over mode buttons.
+ * Usa un enfoque para evitar listeners duplicados.
  */
 function setupModeDescriptions() {
     const modeItems = [
@@ -600,6 +606,7 @@ function setupModeDescriptions() {
     modeItems.forEach(item => {
         const { button, description } = item;
 
+        // Eliminar listeners previos si existen para evitar duplicados
         const oldMouseEnter = button.__hoverEnterListener;
         const oldMouseLeave = button.__hoverLeaveListener;
         const oldClickListener = button.__clickListener;
@@ -608,14 +615,16 @@ function setupModeDescriptions() {
         if (oldMouseLeave) button.removeEventListener('mouseleave', oldMouseLeave);
         if (oldClickListener) button.removeEventListener('click', oldClickListener);
 
+        // Nuevos listeners
         const newMouseEnter = () => {
-            hideAllModeDescriptions();
+            hideAllModeDescriptions(); // Oculta otras descripciones
             description.classList.add('visible');
         };
         const newMouseLeave = () => {
             description.classList.remove('visible');
         };
         const newClick = (event) => {
+            // Alterna la visibilidad al hacer click
             if (description.classList.contains('visible')) {
                 description.classList.remove('visible');
             } else {
@@ -628,6 +637,7 @@ function setupModeDescriptions() {
         button.addEventListener('mouseleave', newMouseLeave);
         button.addEventListener('click', newClick);
 
+        // Guardar las referencias a los listeners para futuras remociones
         button.__hoverEnterListener = newMouseEnter;
         button.__hoverLeaveListener = newMouseLeave;
         button.__clickListener = newClick;
@@ -642,7 +652,7 @@ function hideLoadingScreenAndShowMenu() {
     setTimeout(() => {
         loadingScreen.style.display = 'none';
         mainMenu.classList.remove('hidden');
-    }, 500);
+    }, 500); // Coincide con la duración de la transición CSS
 }
 
 /**
@@ -663,8 +673,9 @@ function setupRatingStars() {
         ratingMessage.textContent = rating > 0 ? 'Thanks for your feedback!' : 'Click a star to rate!';
     }
 
-    updateStars(currentRating);
+    updateStars(currentRating); // Inicializa las estrellas con la calificación guardada
 
+    // Asigna el evento click a cada estrella
     for (let i = 0; i < stars.length; i++) {
         stars[i].onclick = function() {
             const value = parseInt(this.dataset.value);
@@ -683,9 +694,9 @@ function setupRatingStars() {
 function showSuggestionsMenu() {
     mainMenu.classList.add('hidden');
     suggestionsMenu.classList.remove('hidden');
-    suggestionTextarea.value = '';
+    suggestionTextarea.value = ''; // Limpia el textarea al abrir
     updateCharCount();
-    suggestionTextarea.focus();
+    suggestionTextarea.focus(); // Enfoca el textarea para empezar a escribir
 }
 
 /**
@@ -698,12 +709,11 @@ function updateCharCount() {
 }
 
 /**
- * Handles the submission of the suggestion to Formspree.
- * This function now only validates and then allows the form to submit.
+ * Handles the submission of the suggestion asynchronously to Formspree.
  * @param {Event} event - The form submission event.
  */
-function submitSuggestion(event) {
-    event.preventDefault(); // Prevent default form submission initially
+async function submitSuggestion(event) {
+    event.preventDefault(); // Previene la recarga por defecto del formulario
 
     const suggestion = suggestionTextarea.value.trim();
 
@@ -717,20 +727,34 @@ function submitSuggestion(event) {
         return;
     }
 
-    // If validation passes, allow the form to submit to Formspree
-    alert('Your suggestion is being sent! We will redirect you back to the main menu shortly.');
+    submitSuggestionButton.disabled = true; // Deshabilita el botón mientras se envía
 
-    // Programmatically submit the form
-    suggestionForm.submit();
+    try {
+        const response = await fetch(suggestionForm.action, {
+            method: suggestionForm.method,
+            body: new FormData(suggestionForm), // Envía los datos del formulario
+            headers: {
+                'Accept': 'application/json' // Para recibir una respuesta JSON de Formspree
+            }
+        });
 
-    // Clear textarea and return to menu after a short delay
-    // Note: Formspree will cause a page reload/redirection by default.
-    // This timeout is primarily for the user to see the alert.
-    setTimeout(() => {
-        suggestionTextarea.value = '';
-        updateCharCount();
-        showMainMenu();
-    }, 100);
+        if (response.ok) {
+            alert('¡Gracias por tu sugerencia! Ha sido enviada con éxito.');
+            suggestionTextarea.value = '';
+            updateCharCount();
+            showMainMenu(); // Vuelve al menú principal
+        } else {
+            // Manejo de errores de Formspree
+            alert('Hubo un error al enviar tu sugerencia. Por favor, inténtalo de nuevo.');
+            console.error('Formspree error:', await response.json());
+        }
+    } catch (error) {
+        // Manejo de errores de red
+        alert('Hubo un problema de conexión al enviar tu sugerencia. Inténtalo más tarde.');
+        console.error('Network error:', error);
+    } finally {
+        submitSuggestionButton.disabled = false; // Vuelve a habilitar el botón
+    }
 }
 
 
@@ -750,20 +774,20 @@ modesButton.addEventListener('click', showGameModesMenu);
 optionsButton.addEventListener('click', () => {
     mainMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
-    difficultySelect.value = currentDifficulty;
+    difficultySelect.value = currentDifficulty; // Establece la dificultad seleccionada
 });
 
 highscoresButton.addEventListener('click', () => {
     mainMenu.classList.add('hidden');
     highscoresMenu.classList.remove('hidden');
-    loadHighScores();
-    displayHighScores();
+    loadHighScores(); // Carga las puntuaciones antes de mostrarlas
+    displayHighScores(); // Muestra las puntuaciones
 });
 
 ratingButton.addEventListener('click', () => {
     mainMenu.classList.add('hidden');
     ratingMenu.classList.remove('hidden');
-    setupRatingStars();
+    setupRatingStars(); // Configura las estrellas de calificación
 });
 
 suggestionsButton.addEventListener('click', showSuggestionsMenu);
@@ -787,6 +811,7 @@ modeComingSoonButton.addEventListener('click', () => {
 modeCustomButton.addEventListener('click', () => {
     gameModesMenu.classList.add('hidden');
     customModeSettings.classList.remove('hidden');
+    // Inicializa los sliders con los valores actuales del modo personalizado
     customLivesInput.value = customLives;
     customFruitSpeedInput.value = customFruitSpeed;
     customFruitSpeedValue.textContent = customFruitSpeed;
@@ -800,12 +825,12 @@ customLivesInput.addEventListener('input', (event) => {
 
 customFruitSpeedInput.addEventListener('input', (event) => {
     customFruitSpeed = parseInt(event.target.value);
-    customFruitSpeedValue.textContent = customFruitSpeed;
+    customFruitSpeedValue.textContent = customFruitSpeed; // Actualiza el valor mostrado
 });
 
 customBasketSpeedInput.addEventListener('input', (event) => {
     customBasketSpeed = parseInt(event.target.value);
-    customBasketSpeedValue.textContent = customBasketSpeed;
+    customBasketSpeedValue.textContent = customBasketSpeed; // Actualiza el valor mostrado
 });
 
 startCustomGameButton.addEventListener('click', () => {
@@ -813,10 +838,9 @@ startCustomGameButton.addEventListener('click', () => {
     startGame();
 });
 
+// Botones de "Volver"
 backFromModesButton.addEventListener('click', showMainMenu);
-backFromCustomSettingsButton.addEventListener('click', showGameModesMenu);
-
-// Back to Menu buttons from sub-menus
+backFromCustomSettingsButton.addEventListener('click', showGameModesMenu); // Vuelve al menú de modos
 backFromOptionsButton.addEventListener('click', showMainMenu);
 backFromHighscoresButton.addEventListener('click', showMainMenu);
 backFromRatingButton.addEventListener('click', showMainMenu);
@@ -833,15 +857,75 @@ difficultySelect.addEventListener('change', (event) => {
 
 // Suggestion textarea and form submission events
 suggestionTextarea.addEventListener('input', updateCharCount);
-suggestionForm.addEventListener('submit', submitSuggestion); // Listen to the form's submit event
+suggestionForm.addEventListener('submit', submitSuggestion); // Escucha el evento submit del formulario
+
+// --- Eventos para Controles Móviles (Botones Táctiles) ---
+let touchMoveInterval = null; // Para mantener el movimiento mientras se presiona
+let currentDirection = 0;    // -1 para izquierda, 1 para derecha, 0 para no movimiento
+
+function startTouchMove(direction) {
+    // Simplificación de la condición de movimiento usando isGameActiveFlag
+    if (!isGameActiveFlag || gamePaused || lives <= 0) {
+        return;
+    }
+
+    currentDirection = direction;
+    if (!touchMoveInterval) {
+        touchMoveInterval = setInterval(() => {
+            basketPosition += currentDirection * basketMoveSpeed;
+
+            // Asegura que la canasta no se salga de los límites
+            if (basketPosition < 0) {
+                basketPosition = 0;
+            }
+            if (basketPosition > gameArea.offsetWidth - basket.offsetWidth) {
+                basketPosition = gameArea.offsetWidth - basket.offsetWidth;
+            }
+            basket.style.left = `${basketPosition}px`;
+        }, GAME_LOOP_INTERVAL); // Usa el mismo intervalo del juego para una animación fluida
+    }
+}
+
+function stopTouchMove() {
+    clearInterval(touchMoveInterval);
+    touchMoveInterval = null;
+    currentDirection = 0;
+}
+
+// Event Listeners para los botones táctiles
+if (leftButton && rightButton) { // Asegúrate de que los botones existen (para evitar errores en desktop)
+    leftButton.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Evita el zoom y otros comportamientos del navegador
+        startTouchMove(-1);
+    });
+    leftButton.addEventListener('touchend', stopTouchMove);
+    leftButton.addEventListener('touchcancel', stopTouchMove); // En caso de que el toque se interrumpa
+    leftButton.addEventListener('mousedown', (e) => { // Para pruebas en desktop con ratón
+        e.preventDefault();
+        startTouchMove(-1);
+    });
+    leftButton.addEventListener('mouseup', stopTouchMove);
+    leftButton.addEventListener('mouseleave', stopTouchMove); // Detiene el movimiento si el ratón sale del botón
+
+    rightButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startTouchMove(1);
+    });
+    rightButton.addEventListener('touchend', stopTouchMove);
+    rightButton.addEventListener('touchcancel', stopTouchMove);
+    rightButton.addEventListener('mousedown', (e) => { // Para pruebas en desktop con ratón
+        e.preventDefault();
+        startTouchMove(1);
+    });
+    rightButton.addEventListener('mouseup', stopTouchMove);
+    rightButton.addEventListener('mouseleave', stopTouchMove);
+}
+
 
 // Auto-pause when tab loses focus
 document.addEventListener('visibilitychange', () => {
-    if (mainMenu.classList.contains('hidden') && optionsMenu.classList.contains('hidden') &&
-        highscoresMenu.classList.contains('hidden') && ratingMenu.classList.contains('hidden') &&
-        gameModesMenu.classList.contains('hidden') && customModeSettings.classList.contains('hidden') &&
-        suggestionsMenu.classList.contains('hidden') &&
-        gameOverScreen.classList.contains('hidden')) {
+    // Solo pausa si el juego está en curso (no en un menú o pantalla de game over)
+    if (isGameActiveFlag && gameOverScreen.classList.contains('hidden')) { // Simplificado
         if (document.hidden) {
             pauseGame();
         } else {
@@ -852,13 +936,17 @@ document.addEventListener('visibilitychange', () => {
 
 // --- Initial Setup on Page Load ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Oculta el contenedor del juego y los controles al inicio
     gameContainer.style.display = 'none';
     document.getElementById('game-controls').style.display = 'none';
 
+    // Aplica la dificultad guardada o por defecto
     applyDifficulty(currentDifficulty);
 
+    // Carga y muestra las puntuaciones altas
     loadHighScores();
     highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
 
+    // Retraso para la pantalla de carga antes de mostrar el menú principal
     setTimeout(hideLoadingScreenAndShowMenu, LOADING_SCREEN_DURATION);
 });
