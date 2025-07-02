@@ -1,0 +1,899 @@
+:root {
+    /* Colores del Tema */
+    --primary-color: #61dafb;
+    --secondary-color: #f39c12;
+    --background-dark: #282c34;
+    --game-background: #1a1a1a;
+    --text-color: white;
+    --button-hover: #e67e22;
+    --button-active: #c06318;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Base styles */
+* {
+    box-sizing: border-box; /* Incluye padding y border en el ancho/alto */
+}
+
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    overflow: hidden;
+    gap: 50px;
+}
+
+/* Game Container */
+#game-container {
+    width: 60vw;
+    height: 90vh;
+    max-width: 650px;
+    max-height: 850px;
+    background-color: var(--game-background);
+    border: 5px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(97, 218, 251, 0.5);
+    animation: colorChange 10s infinite alternate ease-in-out;
+}
+
+#score-board {
+    padding: 10px;
+    text-align: center;
+    background-color: #333;
+    border-bottom: 2px solid var(--primary-color);
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#game-area {
+    width: 100%;
+    height: calc(100% - 50px);
+    position: relative;
+    /* Puedes añadir un background-image aquí para el fondo del juego */
+    /* background-image: url('assets/images/game_background.png'); */
+    /* background-size: cover; */
+    /* background-position: center bottom; */
+    /* background-repeat: no-repeat; */
+}
+
+#basket {
+    width: 80px;
+    height: 20px;
+    background-color: #e0ac40; /* Color temporal, reemplaza con imagen */
+    /* background-image: url('assets/images/basket.png'); */
+    /* background-size: contain; */
+    /* background-repeat: no-repeat; */
+    /* background-position: center; */
+    position: absolute;
+    bottom: 10px;
+    left: calc(50% - 40px);
+    border-radius: 5px;
+}
+
+.fruit {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Puedes quitarlo si usas imágenes que no son círculos */
+    position: absolute;
+    top: 0;
+    left: var(--start-left); /* Usa la variable CSS para la posición inicial */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background-size: cover; /* Ajusta la imagen al tamaño del div */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Specific fruit colors (these will be replaced by background-image paths in JS later) */
+/* For now, they can serve as placeholders or default colors if no image is loaded */
+.fruit.apple { background-color: #ff0000; }
+.fruit.banana { background-color: #ffe135; }
+.fruit.orange { background-color: #ffa500; }
+.fruit.rotten_apple { background-color: #7b3f00; border-radius: 20%; } /* Ejemplo de fruta mala */
+.fruit.poison_berry { background-color: #8a2be2; } /* Ejemplo de fruta mala */
+
+
+/* Game Over Screen */
+#game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#game-over h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.game-over-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Styles for username input */
+.user-name-input {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name-input label {
+    font-size: 1.2em;
+    color: var(--text-color);
+}
+
+.user-name-input input[type="text"] {
+    padding: 10px 15px;
+    font-size: 1.1em;
+    background-color: #333;
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    outline: none;
+    text-align: center;
+    width: 80%;
+    max-width: 250px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-name-input input[type="text"]::placeholder {
+    color: #aaa;
+}
+
+.user-name-input input[type="text"]:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+
+/* Buttons */
+#restart-button {
+    padding: 12px 25px;
+    font-size: 1.2em;
+    background-color: var(--primary-color);
+    color: var(--game-background);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+#restart-button:hover {
+    background-color: #4fa3d7;
+    transform: translateY(-2px);
+}
+
+#restart-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.secondary-button {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background-color: #555;
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 3px 5px var(--shadow-color);
+}
+
+.secondary-button:hover {
+    background-color: #777;
+    transform: translateY(-2px);
+}
+
+.secondary-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.menu-button {
+    padding: 15px 30px;
+    font-size: 1.5em;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    min-width: 220px;
+}
+
+.menu-button:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-3px);
+}
+
+.menu-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+/* Estilo para botones deshabilitados */
+.menu-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+    transform: none;
+}
+
+
+#game-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    height: 90vh;
+    max-height: 850px;
+}
+
+#pause-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+#pause-button:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-2px);
+}
+
+#pause-button:active {
+    transform: translateY(0);
+}
+
+#pause-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+.blurred {
+    filter: blur(5px);
+    transition: filter 0.3s ease-in-out;
+}
+
+/* --- Loading Screen --- */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    z-index: 1000;
+    transition: opacity 0.5s ease-out;
+}
+
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+/* --- Main Menu --- */
+#main-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 999;
+}
+
+#main-menu h1 {
+    font-size: 3.5em;
+    color: var(--primary-color);
+    margin-bottom: 40px;
+    text-shadow: 0 0 15px rgba(97, 218, 251, 0.6);
+    letter-spacing: 2px;
+}
+
+/* --- Options, Highscores, Rating, Game Modes, Suggestions Menus (Common Styles) --- */
+#options-menu,
+#highscores-menu,
+#rating-menu,
+#game-modes-menu,
+#suggestions-menu { /* Añadido: suggestions-menu */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 998;
+}
+
+#options-menu h2,
+#highscores-menu h2,
+#rating-menu h2,
+#game-modes-menu h2,
+#suggestions-menu h2 { /* Añadido: suggestions-menu */
+    font-size: 2.8em;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
+}
+
+.option-group {
+    margin-bottom: 25px;
+    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.option-group label {
+    font-weight: bold;
+}
+
+.option-group select {
+    padding: 10px 18px;
+    font-size: 1.1em;
+    background-color: #333;
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    appearance: none; /* Remove default select arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2361dafb%22%20d%3D%22M287%2C197.962L146.206%2C57.169L5.413%2C197.962h281.588z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 1em auto;
+}
+
+.option-group select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+/* High Scores List */
+#high-scores-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    font-size: 1.4em;
+    max-height: 400px;
+    overflow-y: auto;
+    width: 80%;
+    max-width: 400px;
+    background-color: #333;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+#high-scores-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #555;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#high-scores-list li:last-child {
+    border-bottom: none;
+}
+
+#high-scores-list li span:first-child {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+#high-scores-list li span:last-child {
+    color: var(--secondary-color);
+}
+
+
+/* --- Rating Stars --- */
+#stars-container {
+    font-size: 3.5em;
+    color: #ccc;
+    margin-bottom: 20px;
+    cursor: pointer;
+    display: flex;
+    gap: 5px; /* Spacing between stars */
+}
+
+.star {
+    transition: color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+.star.active,
+.star:hover {
+    color: var(--secondary-color);
+    transform: translateY(-3px);
+}
+
+.star:hover ~ .star:not(.active) {
+    color: #ccc;
+    transform: translateY(0);
+}
+
+#rating-message {
+    font-size: 1.2em;
+    margin-top: 10px;
+    height: 1.5em; /* Reserve space to prevent layout shift */
+    color: var(--primary-color);
+    font-style: italic;
+}
+
+/* Animations */
+@keyframes colorChange {
+    0% { border-color: var(--primary-color); }
+    25% { border-color: #ff00ff; }
+    50% { border-color: #00ff00; }
+    75% { border-color: #ffff00; }
+    100% { border-color: var(--primary-color); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Game Modes Menu specific styles --- */
+
+/* Estilos para el contenedor de cada modo */
+#game-modes-menu .mode-selection-group {
+    display: flex;
+    flex-direction: row; /* Alinea botón y descripción horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra el grupo en la pantalla */
+    margin-bottom: 20px;
+    width: 100%;
+    position: relative; /* Clave para el posicionamiento absoluto de la descripción */
+    gap: 20px; /* Espacio entre el botón y la descripción cuando no está extendida */
+    min-height: 80px; /* Asegura un espacio mínimo para la descripción */
+}
+
+/* Ajuste del botón dentro del grupo */
+#game-modes-menu .mode-selection-group .menu-button {
+    margin-bottom: 0; /* Quita el margen inferior preexistente */
+    flex-shrink: 0; /* Evita que el botón se encoja */
+}
+
+/* Estilos para la descripción del modo (La "extensión") */
+.mode-description {
+    background-color: rgba(33, 37, 43, 0.95); /* Fondo semitransparente oscuro */
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: #f0f0f0; /* Texto claro */
+    font-size: 0.95em;
+    text-align: left; /* Alinea el texto a la izquierda dentro de la descripción */
+    line-height: 1.5;
+    max-width: 350px; /* Ancho máximo de la caja de descripción */
+    box-shadow: 0 4px 10px var(--shadow-color);
+    position: absolute; /* Se posiciona relativo a .mode-selection-group */
+    /* Ajusta esta distancia para que aparezca a la derecha del centro del botón.
+       50% es el centro del padre, +120px lo desplaza a la derecha.
+       Ajusta '120px' si tu botón es más ancho o quieres más/menos espacio. */
+    left: calc(50% + 120px);
+    /* Esta transformación inicial lo desplaza a la izquierda, dando un efecto de "aparecer" */
+    transform: translateX(-10%);
+    opacity: 0; /* Empieza oculto */
+    visibility: hidden; /* También oculto para accesibilidad y evitar interacciones */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out; /* Animación suave */
+    z-index: 10; /* Asegura que esté por encima de otros elementos */
+}
+
+/* Estilos para el encabezado dentro de la descripción */
+.mode-description h3 {
+    color: var(--secondary-color);
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.3em;
+}
+
+/* Cuando se muestre la descripción (JavaScript añade la clase 'visible') */
+.mode-description.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0); /* Vuelve a su posición original, animando la "entrada" */
+}
+
+/* --- Explosion Effect --- */
+.explosion-effect {
+    position: absolute;
+    width: 30px;  /* Tamaño inicial de la partícula de explosión, ajustado para que coincida con FRUIT_WIDTH */
+    height: 30px; /* Tamaño inicial de la partícula de explosión, ajustado para que coincida con FRUIT_HEIGHT */
+    background-color: var(--secondary-color); /* Color de la explosión */
+    border-radius: 50%;
+    opacity: 1;
+    transform: scale(0);
+    animation: explode 0.5s ease-out forwards; /* Animación de explosión */
+    z-index: 5; /* Asegúrate de que se vea por encima de las frutas y el fondo */
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+        box-shadow: 0 0 10px var(--secondary-color), 0 0 20px var(--secondary-color);
+    }
+    50% {
+        transform: scale(1.5); /* Se expande */
+        opacity: 0.7;
+        box-shadow: 0 0 15px var(--secondary-color), 0 0 30px var(--secondary-color);
+    }
+    100% {
+        transform: scale(2); /* Se expande un poco más */
+        opacity: 0; /* Se desvanece */
+        box-shadow: 0 0 20px var(--secondary-color), 0 0 40px var(--secondary-color);
+    }
+}
+
+/* --- Custom Mode Settings Menu --- */
+#custom-mode-settings {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 998;
+}
+
+#custom-mode-settings h2 {
+    font-size: 2.8em;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
+}
+
+.setting-group {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+    display: flex;
+    flex-direction: column; /* Apila label y input */
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+.setting-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.setting-group input[type="number"],
+.setting-group input[type="range"] {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1.1em;
+    background-color: #333;
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.setting-group input[type="number"]:focus,
+.setting-group input[type="range"]:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+.setting-group input[type="range"] {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    height: 8px;
+    background: #555;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.setting-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(97, 218, 251, 0.7);
+}
+
+.setting-group input[type="range"]::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(97, 218, 251, 0.7);
+}
+
+.setting-group span {
+    font-size: 1.1em;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+/* --- Suggestions Menu --- */
+#suggestions-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 998;
+}
+
+#suggestions-menu h2 {
+    font-size: 2.8em;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(97, 218, 251, 0.4);
+}
+
+#suggestions-menu p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+#suggestion-text {
+    width: 80%;
+    max-width: 500px;
+    height: 150px;
+    padding: 15px;
+    font-size: 1.1em;
+    background-color: #333;
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    outline: none;
+    resize: vertical; /* Permite redimensionar verticalmente */
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#suggestion-text:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+#char-count {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 20px;
+    align-self: center; /* Centrar el contador */
+}
+
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    #game-container {
+        width: 90vw;
+        height: 70vh;
+        max-height: 600px;
+    }
+
+    #game-controls {
+        height: auto;
+        padding-bottom: 20px;
+    }
+
+    #main-menu h1 {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+    }
+
+    .menu-button {
+        padding: 12px 25px;
+        font-size: 1.3em;
+        min-width: 180px;
+    }
+
+    #options-menu h2,
+    #highscores-menu h2,
+    #rating-menu h2,
+    #game-modes-menu h2,
+    #suggestions-menu h2 { /* Añadido: suggestions-menu */
+        font-size: 2em;
+    }
+
+    .option-group, #high-scores-list, #stars-container {
+        font-size: 1.1em;
+        width: 90%;
+    }
+
+    #stars-container {
+        font-size: 3em;
+    }
+
+    /* En pantallas pequeñas, apilar los elementos de selección de modo */
+    #game-modes-menu .mode-selection-group {
+        flex-direction: column; /* Vuelve a apilar el botón y la descripción */
+        gap: 10px; /* Menos espacio entre ellos */
+    }
+
+    /* La descripción se posiciona estáticamente debajo del botón */
+    .mode-description {
+        position: static; /* Vuelve al flujo normal de documentos */
+        transform: none; /* Quita cualquier transformación de desplazamiento */
+        max-width: 90%; /* Ajusta el ancho para móviles */
+        margin-top: 10px; /* Añade espacio arriba */
+        text-align: center; /* Centra el texto en móviles */
+    }
+
+    /* Opcional: Ajusta el ancho de los botones en móviles si es necesario */
+    #game-modes-menu .menu-button {
+        min-width: 180px; /* Mantén un ancho razonable para el botón */
+    }
+
+    /* Ajustes para el input de username en móviles */
+    .user-name-input input[type="text"] {
+        width: 90%; /* Más ancho en móviles */
+        max-width: 200px;
+    }
+
+    #custom-mode-settings h2 {
+        font-size: 2em;
+    }
+    .setting-group {
+        font-size: 1.1em;
+    }
+    .setting-group input[type="number"],
+    .setting-group input[type="range"] {
+        font-size: 1em;
+    }
+
+    #suggestions-menu p {
+        font-size: 1em;
+    }
+    #suggestion-text {
+        width: 90%;
+        font-size: 1em;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    #game-container {
+        width: 95vw;
+        height: 65vh;
+        max-height: 500px;
+    }
+
+    #score-board {
+        font-size: 1em;
+        padding: 8px;
+    }
+
+    #basket {
+        width: 70px;
+    }
+
+    .fruit {
+        width: 25px;
+        height: 25px;
+    }
+
+    #game-over h2 {
+        font-size: 1.8em;
+    }
+
+    #restart-button, .secondary-button {
+        padding: 8px 15px;
+        font-size: 1em;
+    }
+
+    #pause-button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    #main-menu h1 {
+        font-size: 2em;
+        margin-bottom: 25px;
+    }
+
+    .menu-button {
+        padding: 10px 20px;
+        font-size: 1.2em;
+        min-width: 160px;
+    }
+
+    #options-menu h2,
+    #highscores-menu h2,
+    #rating-menu h2,
+    #game-modes-menu h2,
+    #suggestions-menu h2 { /* Añadido: suggestions-menu */
+        font-size: 1.8em;
+    }
+
+    .option-group, #high-scores-list, #stars-container {
+        font-size: 1em;
+    }
+
+    #stars-container {
+        font-size: 2.5em;
+    }
+}

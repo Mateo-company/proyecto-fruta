@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atrapa la Fruta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p>Cargando Juego...</p>
+    </div>
+
+    <div id="main-menu" class="hidden">
+        <h1>Atrapa la Fruta</h1>
+        <button id="modes-button" class="menu-button">Modos de Juego</button>
+        <button id="options-button" class="menu-button">Opciones</button>
+        <button id="highscores-button" class="menu-button">Puntuaciones Altas</button>
+        <button id="rating-button" class="menu-button">Calificar Juego</button>
+        <button id="suggestions-button" class="menu-button">Sugerencias</button> </div>
+
+    <div id="game-modes-menu" class="hidden">
+        <h2>Selecciona un Modo de Juego</h2>
+
+        <div class="mode-selection-group">
+            <button id="mode-normal-button" class="menu-button">Modo Normal</button>
+            <div id="desc-normal" class="mode-description hidden">
+                <h3>Modo Normal</h3>
+                <p>Atrapa todas las frutas que puedas para conseguir la puntuación más alta. Pierdes una vida si una fruta cae. ¡El juego termina al quedarte sin vidas!</p>
+            </div>
+        </div>
+
+        <div class="mode-selection-group">
+            <button id="mode-survival-button" class="menu-button">Modo Supervivencia</button>
+            <div id="desc-survival" class="mode-description hidden">
+                <h3>Modo Supervivencia</h3>
+                <p>¡Ponte a prueba! Atrapa frutas buenas para ganar puntos y recuperar vida, pero **evita** las frutas podridas. Si una fruta buena cae, pierdes vida.</p>
+            </div>
+        </div>
+
+        <div class="mode-selection-group">
+            <button id="mode-custom-button" class="menu-button">Modo Personalizado</button>
+            <div id="desc-custom" class="mode-description hidden">
+                <h3>Modo Personalizado</h3>
+                <p>¡Configura el juego a tu gusto! Ajusta las vidas, la velocidad de las frutas y la velocidad de la canasta. Las puntuaciones de este modo no se guardan en las puntuaciones altas.</p>
+            </div>
+        </div>
+
+        <div class="mode-selection-group">
+            <button id="mode-coming-soon-button" class="menu-button" disabled>Próximamente...</button>
+            <div id="desc-coming-soon" class="mode-description hidden">
+                <h3>Próximamente...</h3>
+                <p>Estamos trabajando en nuevos desafíos y mecánicas emocionantes para el juego. ¡Mantente atento a las futuras actualizaciones!</p>
+            </div>
+        </div>
+
+        <button id="back-from-modes" class="menu-button">Volver al Menú</button>
+    </div>
+
+    <div id="custom-mode-settings" class="hidden">
+        <h2>Configuración Personalizada</h2>
+        <div class="setting-group">
+            <label for="custom-lives">Vidas Iniciales:</label>
+            <input type="number" id="custom-lives" min="1" max="10" value="3">
+        </div>
+        <div class="setting-group">
+            <label for="custom-fruit-speed">Velocidad de Frutas:</label>
+            <input type="range" id="custom-fruit-speed" min="1" max="6" value="3">
+            <span id="custom-fruit-speed-value">3</span>
+        </div>
+        <div class="setting-group">
+            <label for="custom-basket-speed">Velocidad de Canasta:</label>
+            <input type="range" id="custom-basket-speed" min="10" max="40" value="20" step="5">
+            <span id="custom-basket-speed-value">20</span>
+        </div>
+        <button id="start-custom-game-button" class="menu-button">¡Empezar Juego Personalizado!</button>
+        <button id="back-from-custom-settings" class="menu-button secondary-button">Volver a Modos</button>
+    </div>
+
+    <div id="options-menu" class="hidden">
+        <h2>Opciones</h2>
+        <div class="option-group">
+            <label for="difficulty">Dificultad:</label>
+            <select id="difficulty">
+                <option value="easy">Fácil</option>
+                <option value="medium">Normal</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+        <button id="back-from-options" class="menu-button">Volver al Menú</button>
+    </div>
+
+    <div id="highscores-menu" class="hidden">
+        <h2>Puntuaciones Altas</h2>
+        <ul id="high-scores-list">
+            <li>No hay puntuaciones aún. ¡Juega para establecer una!</li>
+        </ul>
+        <button id="clear-highscores-button" class="menu-button">Borrar Puntuaciones</button>
+        <button id="back-from-highscores" class="menu-button">Volver al Menú</button>
+    </div>
+
+    <div id="rating-menu" class="hidden">
+        <h2>Calificar Juego</h2>
+        <p>¿Qué te pareció el juego?</p>
+        <div id="stars-container">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <p id="rating-message">¡Haz clic en una estrella para calificar!</p>
+        <button id="back-from-rating" class="menu-button">Volver al Menú</button>
+    </div>
+
+    <div id="suggestions-menu" class="hidden">
+        <h2>Sugerencias y Comentarios</h2>
+        <p>¡Ayúdanos a mejorar el juego! Tus ideas y comentarios son muy valiosos.</p>
+        <form id="suggestion-form" action="https://formspree.io/f/mgvyqwkk" method="POST">
+            <textarea name="sugerencia" id="suggestion-text" placeholder="Escribe tu sugerencia aquí..." maxlength="500"></textarea>
+            <span id="char-count">0/500 caracteres</span>
+            <button type="submit" id="submit-suggestion-button" class="menu-button">Enviar Sugerencia</button>
+        </form>
+        <button id="back-from-suggestions" class="menu-button secondary-button">Volver al Menú</button>
+    </div>
+
+    <div id="game-container">
+        </div>
+
+    <div id="game-container">
+        <div id="score-board">
+            Puntos: <span id="score">0</span> | Vidas: <span id="lives">3</span> | Máx. Puntos: <span id="high-score-display">0</span>
+        </div>
+        <div id="game-area">
+            <div id="basket"></div>
+        </div>
+        <div id="game-over" class="hidden">
+            <h2>¡Juego Terminado!</h2>
+            <p>Puntuación Final: <span id="final-score">0</span></p>
+            <div class="user-name-input">
+                <label for="username">Tu nombre:</label>
+                <input type="text" id="username" maxlength="10" placeholder="Anónimo">
+            </div>
+            <div class="game-over-buttons">
+                <button id="save-score-button" class="menu-button">Guardar Puntuación</button>
+                <button id="restart-button">Jugar de Nuevo</button>
+                <button id="back-to-menu-from-gameover" class="secondary-button">Menú Principal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-controls">
+        <button id="pause-button">Pausar</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
