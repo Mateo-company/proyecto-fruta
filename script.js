@@ -1,952 +1,706 @@
-// --- Constants for Game Configuration ---
-const GAME_LOOP_INTERVAL = 20; // ms (controls frame rate)
-const FRUIT_WIDTH = 30; // pixels
-const FRUIT_HEIGHT = 30; // pixels
-const LOADING_SCREEN_DURATION = 1000; // ms
-const EXPLOSION_SIZE = 30; // Coincide con el width/height en CSS para la explosión
+// Elementos del DOM (declarados aquí, asignados en DOMContentLoaded)
+let gameContainer;
+let gameArea;
+let basket;
+let pauseButton;
+let scoreDisplay; // <-- CAMBIADO A LET, SIN ASIGNACIÓN AQUÍ
+let livesDisplay; // <-- CAMBIADO A LET, SIN ASIGNACIÓN AQUÍ
+let highScoreIndicator; // <-- CAMBIADO A LET, SIN ASIGNACIÓN AQUÍ
+let mainMenu;
+let startGameButton;
+let optionsButton;
+let highScoresButton;
+let ratingMenu;
+let suggestionMenu;
+let gameOverScreen;
+let pauseMenu;
+let ratingStars;
+let ratingMessage;
+let suggestionForm;
+let suggestionText;
+let charCount;
+let finalScoreDisplay;
+let playerNameInput;
+let saveScoreButton;
+let restartGameButton;
+let resumeButton;
+let restartFromPauseButton;
+let backToMainFromPauseButton;
+let backToMainFromOptionsButton;
+let backToMainFromHighscoresButton;
+let backToMainFromRatingButton;
+let backToMainFromSuggestionButton;
+let customModeButton;
+let customModeMenu;
+let fruitFallSpeedInput;
+let fruitFallSpeedValue;
+let fruitSpawnRateInput;
+let fruitSpawnRateValue;
+let maxLivesInput;
+let maxLivesValue;
+let basketSizeInput;
+let basketSizeValue;
+let goodBadRatioInput;
+let goodBadRatioValue;
+let difficultyVisualSelect;
+let applyCustomSettingsButton;
+let backToOptionsFromCustomButton;
+let mobileLeftButton;
+let mobileRightButton;
+let loadingScreen; // Este ya está bien, se usa al inicio.
 
-// --- References to DOM Elements ---
-const gameArea = document.getElementById('game-area');
-const basket = document.getElementById('basket');
-const scoreDisplay = document.getElementById('score');
-const livesDisplay = document.getElementById('lives');
-const gameOverScreen = document.getElementById('game-over');
-const finalScoreDisplay = document.getElementById('final-score');
-const restartButton = document.getElementById('restart-button');
-const highScoreDisplay = document.getElementById('high-score-display');
-const pauseButton = document.getElementById('pause-button');
-const gameContainer = document.getElementById('game-container');
+    // Menús y pantallas
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainMenu = document.getElementById('main-menu');
+    const gameScreen = document.getElementById('game-screen');
+    const optionsMenu = document.getElementById('options-menu');
+    const customModeMenu = document.getElementById('custom-mode-menu');
+    const highScoresMenu = document.getElementById('high-scores-menu');
+    const ratingMenu = document.getElementById('rating-menu');
+    const suggestionMenu = document.getElementById('suggestion-menu');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const pauseMenu = document.getElementById('pause-menu');
 
-// Main Menu Elements
-const loadingScreen = document.getElementById('loading-screen');
-const mainMenu = document.getElementById('main-menu');
-const optionsButton = document.getElementById('options-button');
-const highscoresButton = document.getElementById('highscores-button');
-const ratingButton = document.getElementById('rating-button');
-const suggestionsButton = document.getElementById('suggestions-button');
+    // Botones
+    const startGameButton = document.getElementById('start-game-button');
+    const optionsButton = document.getElementById('options-button');
+    const highScoresButton = document.getElementById('high-scores-button');
+    const customModeButton = document.getElementById('custom-mode-button');
+    const rateGameButton = document.getElementById('rate-game-button');
+    const suggestFeatureButton = document.getElementById('suggest-feature-button');
+    const backToMainFromOptionsButton = document.getElementById('back-to-main-from-options-button');
+    const backToOptionsFromCustomButton = document.getElementById('back-to-options-from-custom-button');
+    const backToMainFromHighScoresButton = document.getElementById('back-to-main-from-highscores-button');
+    const backToMainFromRatingButton = document.getElementById('back-to-main-from-rating-button');
+    const backToMainFromSuggestionButton = document.getElementById('back-to-main-from-suggestion-button');
+    const applyCustomSettingsButton = document.getElementById('apply-custom-settings-button');
+    const restartGameButton = document.getElementById('restart-game-button');
+    const saveScoreButton = document.getElementById('save-score-button');
+    const pauseButton = document.getElementById('pause-button');
+    const resumeButton = document.getElementById('resume-button');
+    const restartFromPauseButton = document.getElementById('restart-from-pause-button');
+    const backToMainFromPauseButton = document.getElementById('back-to-main-from-pause-button');
 
-// Game Modes Menu Elements
-const modesButton = document.getElementById('modes-button');
-const gameModesMenu = document.getElementById('game-modes-menu');
-const modeNormalButton = document.getElementById('mode-normal-button');
-const modeSurvivalButton = document.getElementById('mode-survival-button');
-const modeComingSoonButton = document.getElementById('mode-coming-soon-button');
-const backFromModesButton = document.getElementById('back-from-modes');
-// Descripciones de modos
-const descNormal = document.getElementById('desc-normal');
-const descSurvival = document.getElementById('desc-survival');
-const descComingSoon = document.getElementById('desc-coming-soon');
+    // Controles móviles (se verifica su existencia en el evento)
+    const mobileLeftButton = document.getElementById('mobile-left-button');
+    const mobileRightButton = document.getElementById('mobile-right-button');
 
-// Custom Mode Settings Elements
-const modeCustomButton = document.getElementById('mode-custom-button');
-const descCustom = document.getElementById('desc-custom');
-const customModeSettings = document.getElementById('custom-mode-settings');
-const customLivesInput = document.getElementById('custom-lives');
-const customFruitSpeedInput = document.getElementById('custom-fruit-speed');
-const customFruitSpeedValue = document.getElementById('custom-fruit-speed-value');
-const customBasketSpeedInput = document.getElementById('custom-basket-speed');
-const customBasketSpeedValue = document.getElementById('custom-basket-speed-value');
-const startCustomGameButton = document.getElementById('start-custom-game-button');
-const backFromCustomSettingsButton = document.getElementById('back-from-custom-settings');
+    // Calificación
+    const stars = document.querySelectorAll('.star');
+    const ratingMessage = document.getElementById('rating-message');
 
-// Options Menu Elements
-const optionsMenu = document.getElementById('options-menu');
-const difficultySelect = document.getElementById('difficulty');
-const backFromOptionsButton = document.getElementById('back-from-options');
+    // Sugerencias
+    const suggestionForm = document.getElementById('suggestion-form');
+    const suggestionText = document.getElementById('suggestion-text');
+    const charCount = document.getElementById('char-count');
 
-// High Scores Menu Elements
-const highscoresMenu = document.getElementById('highscores-menu');
-const highScoresList = document.getElementById('high-scores-list');
-const clearHighscoresButton = document.getElementById('clear-highscores-button');
-const backFromHighscoresButton = document.getElementById('back-from-highscores');
+    // Opciones personalizadas
+    const fruitFallSpeedRange = document.getElementById('fruit-fall-speed');
+    const fruitSpawnRateRange = document.getElementById('fruit-spawn-rate');
+    const maxLivesNumber = document.getElementById('max-lives');
+    const basketSizeRange = document.getElementById('basket-size');
+    const goodBadRatioRange = document.getElementById('good-bad-ratio');
+    const difficultyVisualSelect = document.getElementById('difficulty-visual');
 
-// Rating Menu Elements
-const ratingMenu = document.getElementById('rating-menu');
-const starsContainer = document.getElementById('stars-container');
-const ratingMessage = document.getElementById('rating-message');
-const backFromRatingButton = document.getElementById('back-from-rating');
+    // Variables del juego
+    let score = 0;
+    let lives = 3;
+    let highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore')) : 0;
+    let basketX = 0;
+    let fruits = [];
+    let gameInterval; // Para la creación de frutas
+    let gamePaused = false;
+    let gameStarted = false;
+    let animationFrameId; // Para el bucle de juego (requestAnimationFrame)
+    let lastTime = 0; // Para deltaTime en el gameLoop
 
-// Suggestions Menu Elements
-const suggestionsMenu = document.getElementById('suggestions-menu');
-const suggestionForm = document.getElementById('suggestion-form');
-const suggestionTextarea = document.getElementById('suggestion-text');
-const charCountSpan = document.getElementById('char-count');
-const submitSuggestionButton = document.getElementById('submit-suggestion-button');
-const backFromSuggestionsButton = document.getElementById('back-from-suggestions');
+    // Variables para movimiento móvil continuo
+    let mobileMoveInterval = null;
+    let mobileMoveDirection = 0; // -1: izquierda, 1: derecha
 
-// Game Over Buttons
-const backToMenuFromGameoverButton = document.getElementById('back-to-menu-from-gameover');
-const usernameInput = document.getElementById('username');
-const saveScoreButton = document.getElementById('save-score-button');
+    // --- Configuraciones del Juego (predeterminadas y personalizables) ---
+    const defaultSettings = {
+        fruitFallSpeed: 3,
+        fruitSpawnRate: 1500,
+        maxLives: 3,
+        basketSize: 80,
+        goodBadRatio: 0.8,
+        difficultyVisual: 'normal'
+    };
+    let currentSettings = { ...defaultSettings
+    };
 
-// Mobile Controls Elements
-const leftButton = document.getElementById('left-button');
-const rightButton = document.getElementById('right-button');
+    // Arrays de frutas (rutas de imagen ya están en tu CSS)
+    const goodFruits = [{
+        name: 'apple',
+        points: 10,
+        src: 'assets/images/apple.png'
+    }, {
+        name: 'orange',
+        points: 15,
+        src: 'assets/images/orange.png'
+    }, {
+        name: 'cherry-berry',
+        points: 20,
+        src: 'assets/images/cherry_berry.png'
+    }, ];
 
+    const badFruits = [{
+        name: 'apple-mala',
+        points: -15,
+        src: 'assets/images/apple-mala.png'
+    }, ];
 
-// --- Game Variables ---
-let score = 0;
-let lives = 0;
-let basketPosition = 0;
-let fallingFruits = [];
-let gameInterval;
-let fruitGenerationInterval;
+    // --- Preloading de imágenes ---
+    function preloadImages(imageUrls, callback) {
+        let loadedCount = 0;
+        const totalImages = imageUrls.length;
 
-let basketMoveSpeed = 20;
-
-// Difficulty Settings (defaults or loaded from localStorage)
-let currentDifficulty = localStorage.getItem('difficulty') || 'medium';
-let fruitFallSpeed = 0;
-let fruitGenerationDelay = 0;
-let initialLives = 0;
-
-const fruitTypes = ['apple', 'banana', 'orange'];
-const survivalFruitTypes = {
-    good: ['apple', 'banana', 'orange'],
-    bad: ['rotten_apple', 'poison_berry']
-};
-
-let gamePaused = false;
-let highScores = [];
-let userRating = localStorage.getItem('userRating') || 0;
-
-let currentGameMode = 'normal';
-let scoreSavedThisRound = false;
-
-// Variables para el Modo Personalizado
-let customLives = 3;
-let customFruitSpeed = 3;
-let customBasketSpeed = 20;
-
-// Nueva variable de estado para simplificar las condiciones de "juego activo"
-let isGameActiveFlag = false;
-
-// --- Game Logic Functions ---
-
-/**
- * Applies difficulty settings (fall speed, generation frequency, initial lives).
- * These settings are general and adjusted slightly based on the game mode.
- * @param {string} difficulty - 'easy', 'medium', or 'hard'.
- */
-function applyDifficulty(difficulty) {
-    if (currentGameMode !== 'custom') {
-        switch (difficulty) {
-            case 'easy':
-                fruitFallSpeed = 2;
-                fruitGenerationDelay = 1500;
-                initialLives = 5;
-                break;
-            case 'medium':
-                fruitFallSpeed = 3;
-                fruitGenerationDelay = 1000;
-                initialLives = 3;
-                break;
-            case 'hard':
-                fruitFallSpeed = 4;
-                fruitGenerationDelay = 700;
-                initialLives = 2;
-                break;
+        if (totalImages === 0) {
+            callback();
+            return;
         }
-        lives = initialLives;
-        livesDisplay.textContent = lives;
-    }
 
-    localStorage.setItem('difficulty', difficulty);
-    currentDifficulty = difficulty;
-
-    console.log(`Difficulty set: ${difficulty}, Fall Speed: ${fruitFallSpeed}, Generation Delay: ${fruitGenerationDelay}ms, Lives: ${initialLives}`);
-
-    // Eliminado: No se llama a startMainGameLoop aquí para evitar comportamientos inesperados
-    // si la dificultad cambia mientras el juego ya está en progreso o en un menú.
-    // startGame() o resumeGame() son responsables de iniciar el bucle.
-}
-
-/**
- * Initializes or restarts a new game session.
- * Resets scores, lives, basket position, and game state.
- */
-function startGame() {
-    score = 0;
-    if (currentGameMode === 'custom') {
-        lives = customLives;
-        basketMoveSpeed = customBasketSpeed;
-    } else {
-        lives = initialLives;
-        basketMoveSpeed = 20; // Restore default basket speed
-    }
-    scoreDisplay.textContent = score;
-    livesDisplay.textContent = lives;
-    scoreSavedThisRound = false;
-    usernameInput.value = '';
-
-    saveScoreButton.disabled = (currentGameMode === 'custom');
-    if (currentGameMode === 'custom') {
-        usernameInput.placeholder = "Score not saved in this mode";
-        usernameInput.disabled = true;
-    } else {
-        usernameInput.placeholder = "Anonymous";
-        usernameInput.disabled = false;
-    }
-
-    basketPosition = gameArea.offsetWidth / 2 - basket.offsetWidth / 2;
-    basket.style.left = `${basketPosition}px`;
-
-    fallingFruits.forEach(fruit => fruit.element.remove());
-    fallingFruits = [];
-
-    gameOverScreen.classList.add('hidden');
-    mainMenu.classList.add('hidden'); // Asegúrate de que el menú principal se oculte
-    optionsMenu.classList.add('hidden');
-    highscoresMenu.classList.add('hidden');
-    ratingMenu.classList.add('hidden');
-    gameModesMenu.classList.add('hidden');
-    customModeSettings.classList.add('hidden');
-    suggestionsMenu.classList.add('hidden');
-
-    gameContainer.classList.remove('blurred');
-    gameContainer.style.display = 'flex'; // Asegura que el contenedor del juego sea visible
-    document.getElementById('game-controls').style.display = 'flex'; // Asegura que los controles móviles sean visibles
-
-    gamePaused = false;
-    pauseButton.textContent = 'Pausar';
-    pauseButton.disabled = false;
-    isGameActiveFlag = true; // El juego está activo
-
-    loadHighScores();
-    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
-
-    startMainGameLoop();
-}
-
-/**
- * Handles basket movement based on left/right arrow keys or 'A'/'D'.
- * @param {KeyboardEvent} e - The keyboard event object.
- */
-function moveBasket(e) {
-    // Simplificación de la condición de movimiento usando isGameActiveFlag
-    if (!isGameActiveFlag || gamePaused || lives <= 0) {
-        return;
-    }
-
-    if (e.key === 'ArrowLeft' || e.key === 'a') {
-        basketPosition -= basketMoveSpeed;
-    } else if (e.key === 'ArrowRight' || e.key === 'd') {
-        basketPosition += basketMoveSpeed;
-    }
-
-    if (basketPosition < 0) {
-        basketPosition = 0;
-    }
-    if (basketPosition > gameArea.offsetWidth - basket.offsetWidth) {
-        basketPosition = gameArea.offsetWidth - basket.offsetWidth;
-    }
-    basket.style.left = `${basketPosition}px`;
-}
-
-/**
- * Creates a new fruit element with a random type (good/bad based on mode) and adds it to the game.
- */
-function createFruit() {
-    const fruitElement = document.createElement('div');
-    let fruitTypeClass;
-    let isGoodFruit = true;
-
-    if (currentGameMode === 'survival') {
-        if (Math.random() < 0.7) {
-            fruitTypeClass = survivalFruitTypes.good[Math.floor(Math.random() * survivalFruitTypes.good.length)];
-            isGoodFruit = true;
-        } else {
-            fruitTypeClass = survivalFruitTypes.bad[Math.floor(Math.random() * survivalFruitTypes.bad.length)];
-            isGoodFruit = false;
-        }
-    } else {
-        fruitTypeClass = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
-    }
-
-    fruitElement.classList.add('fruit', fruitTypeClass);
-
-    const startLeft = Math.random() * (gameArea.offsetWidth - FRUIT_WIDTH);
-    fruitElement.style.left = `${startLeft}px`;
-
-    gameArea.appendChild(fruitElement);
-
-    fallingFruits.push({
-        element: fruitElement,
-        top: 0,
-        left: startLeft,
-        width: FRUIT_WIDTH,
-        height: FRUIT_HEIGHT,
-        isGood: isGoodFruit
-    });
-}
-
-/**
- * Creates and animates an explosion effect at the given position.
- * @param {number} x - The X position of the explosion's center.
- * @param {number} y - The Y position of the explosion's center.
- */
-function createExplosion(x, y) {
-    const explosionElement = document.createElement('div');
-    explosionElement.classList.add('explosion-effect');
-    explosionElement.style.left = `${x - (EXPLOSION_SIZE / 2)}px`;
-    explosionElement.style.top = `${y - (EXPLOSION_SIZE / 2)}px`;
-    gameArea.appendChild(explosionElement);
-
-    explosionElement.addEventListener('animationend', () => {
-        explosionElement.remove();
-    });
-}
-
-
-/**
- * The main game loop. Moves fruits, detects collisions, and manages lives.
- * Fruit interaction logic changes based on the game mode.
- */
-function gameLoop() {
-    for (let i = 0; i < fallingFruits.length; i++) {
-        const fruit = fallingFruits[i];
-        fruit.top += fruitFallSpeed;
-        fruit.element.style.top = `${fruit.top}px`;
-
-        // Collision detection
-        if (
-            fruit.top + fruit.height >= basket.offsetTop &&
-            fruit.top <= basket.offsetTop + basket.offsetHeight &&
-            fruit.left + fruit.width >= basketPosition &&
-            fruit.left <= basketPosition + basket.offsetWidth
-        ) {
-            // Fruit caught
-            if (fruit.isGood) {
-                score++;
-                if (currentGameMode === 'survival' && lives < initialLives) { // Solo aumenta vidas si no está en el máximo
-                    lives++;
+        imageUrls.forEach(url => {
+            const img = new Image();
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                    callback();
                 }
-            } else { // Bad fruit (survival mode only)
-                lives--;
-            }
-            scoreDisplay.textContent = score;
-            livesDisplay.textContent = lives;
-
-            fruit.element.remove();
-            fallingFruits.splice(i, 1);
-            i--;
-
-        } else if (fruit.top > gameArea.offsetHeight) {
-            // Fruit fell off screen
-            // Se pierde vida si una fruta buena cae en modo supervivencia, o cualquier fruta en normal/custom
-            if (currentGameMode === 'normal' || (currentGameMode === 'survival' && fruit.isGood) || currentGameMode === 'custom') {
-                lives--;
-                createExplosion(fruit.left + fruit.width / 2, gameArea.offsetHeight - 10);
-            }
-            livesDisplay.textContent = lives;
-
-            fruit.element.remove();
-            fallingFruits.splice(i, 1);
-            i--;
-
-            if (lives <= 0) {
-                endGame();
-                return;
-            }
-        }
+            };
+            img.onerror = () => {
+                console.warn(`Error al cargar imagen: ${url}`);
+                loadedCount++; // Seguimos contando incluso si falla para evitar carga infinita
+                if (loadedCount === totalImages) {
+                    callback();
+                }
+            };
+            img.src = url;
+        });
     }
-}
 
-/**
- * Starts the game loop and fruit generation intervals.
- */
-function startMainGameLoop() {
-    if (lives > 0 && gameOverScreen.classList.contains('hidden')) {
-        clearInterval(gameInterval);
-        clearInterval(fruitGenerationInterval);
+    const allFruitImageUrls = [...goodFruits.map(f => f.src), ...badFruits.map(f => f.src)];
+    const otherGameImageUrls = ['assets/images/canasta.png', 'assets/images/explosion.png']; // Añade otras imágenes si hay
+    const allAssetsToPreload = [...new Set([...allFruitImageUrls, ...otherGameImageUrls])]; // Eliminar duplicados
 
-        let currentFruitFallSpeed;
-        let currentFruitGenerationDelay;
+    // --- Funciones de UI/Menú ---
+    function showScreen(screen) {
+        // Ocultar todas las pantallas y menús
+        [mainMenu, gameScreen, optionsMenu, customModeMenu, highScoresMenu, ratingMenu, suggestionMenu, gameOverScreen, pauseMenu, loadingScreen].forEach(s => {
+            if (s) s.classList.add('hidden'); // Asegurarse de que el elemento existe
+        });
+        // Mostrar la pantalla deseada
+        if (screen) screen.classList.remove('hidden');
+    }
 
-        if (currentGameMode === 'custom') {
-            currentFruitFallSpeed = customFruitSpeed;
-            // La generación de frutas se acelera cuanto mayor sea la velocidad personalizada
-            currentFruitGenerationDelay = 2000 - (customFruitSpeed * 200);
-            if (currentFruitGenerationDelay < 300) currentFruitGenerationDelay = 300; // Mínimo de 300ms
+    function updateHud() {
+        scoreDisplay.textContent = `PUNTOS: ${score}`;
+        livesDisplay.textContent = `VIDAS: ${lives}`;
+        if (score > highScore) {
+            highScoreIndicator.textContent = `NUEVA PUNT. ALTA: ${score}`;
+            highScoreIndicator.classList.remove('hidden');
         } else {
-            currentFruitFallSpeed = fruitFallSpeed;
-            currentFruitGenerationDelay = fruitGenerationDelay;
+            highScoreIndicator.textContent = `MEJOR PUNT.: ${highScore}`;
+            highScoreIndicator.classList.remove('hidden');
+        }
+    }
+
+    function applySettings() {
+        currentSettings.fruitFallSpeed = parseFloat(fruitFallSpeedRange.value);
+        currentSettings.fruitSpawnRate = parseInt(fruitSpawnRateRange.value);
+        currentSettings.maxLives = parseInt(maxLivesNumber.value);
+        currentSettings.basketSize = parseInt(basketSizeRange.value);
+        currentSettings.goodBadRatio = parseFloat(goodBadRatioRange.value);
+        currentSettings.difficultyVisual = difficultyVisualSelect.value;
+
+        // Ajustar el tamaño de la canasta al aplicar las configuraciones
+        basket.style.width = `${currentSettings.basketSize}px`;
+        basket.style.height = `${currentSettings.basketSize * 0.75}px`; // Mantener proporción
+
+        resetGame(); // Reinicia el juego con las nuevas configuraciones
+        startGame(); // Inicia el juego
+        showScreen(gameScreen);
+    }
+
+    function loadCustomSettings() {
+        // Cargar los valores actuales en los elementos del menú
+        fruitFallSpeedRange.value = currentSettings.fruitFallSpeed;
+        fruitSpawnRateRange.value = currentSettings.fruitSpawnRate;
+        maxLivesNumber.value = currentSettings.maxLives;
+        basketSizeRange.value = currentSettings.basketSize;
+        goodBadRatioRange.value = currentSettings.goodBadRatio;
+        difficultyVisualSelect.value = currentSettings.difficultyVisual;
+
+        // Actualizar los textos de valor de los sliders
+        document.getElementById('fruit-fall-speed-value').textContent = currentSettings.fruitFallSpeed.toFixed(1);
+        document.getElementById('fruit-spawn-rate-value').textContent = currentSettings.fruitSpawnRate;
+        document.getElementById('max-lives-value').textContent = currentSettings.maxLives;
+        document.getElementById('basket-size-value').textContent = currentSettings.basketSize;
+        document.getElementById('good-bad-ratio-value').textContent = (currentSettings.goodBadRatio * 100).toFixed(0) + '% Buenas';
+    }
+
+    // --- Lógica del Juego ---
+
+    // Inicializa la canasta en el centro del game-area
+    function initializeBasketPosition() {
+        // Asegurarse de que el tamaño de la canasta se aplica antes de calcular la posición
+        basket.style.width = `${currentSettings.basketSize}px`;
+        basket.style.height = `${currentSettings.basketSize * 0.75}px`;
+
+        // Esperar un tick del navegador para que offsetWidth se actualice, si es necesario,
+        // o confiar en que la canasta ya tiene un ancho definido por CSS al cargar.
+        // Para asegurar, podríamos usar un valor por defecto o esperar un requestAnimationFrame.
+        // Aquí asumimos que el CSS ya le dio un ancho inicial.
+        const actualBasketWidth = basket.offsetWidth;
+        basketX = (gameArea.offsetWidth / 2) - (actualBasketWidth / 2);
+        basket.style.left = basketX + 'px';
+    }
+
+    // Actualiza la posición de la canasta en el DOM
+    function updateBasketPosition() {
+        basket.style.left = basketX + 'px';
+    }
+
+    // Manejador de movimiento del ratón
+    function handleMouseMove(event) {
+        if (!gamePaused && gameStarted) {
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            const mouseX = event.clientX - gameAreaRect.left;
+
+            let newBasketX = mouseX - (basket.offsetWidth / 2);
+
+            const maxBasketX = gameArea.offsetWidth - basket.offsetWidth;
+
+            // Limitar la canasta dentro de los límites del área de juego
+            if (newBasketX < 0) {
+                newBasketX = 0;
+            } else if (newBasketX > maxBasketX) {
+                newBasketX = maxBasketX;
+            }
+
+            basketX = newBasketX;
+            updateBasketPosition();
+        }
+    }
+
+    // Manejador de movimiento táctil (para móviles)
+    function handleTouchMove(event) {
+        if (!gamePaused && gameStarted && event.touches.length > 0) {
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            const touchX = event.touches[0].clientX - gameAreaRect.left;
+
+            let newBasketX = touchX - (basket.offsetWidth / 2);
+
+            const maxBasketX = gameArea.offsetWidth - basket.offsetWidth;
+
+            // Limitar la canasta dentro de los límites del área de juego
+            if (newBasketX < 0) {
+                newBasketX = 0;
+            } else if (newBasketX > maxBasketX) {
+                newBasketX = maxBasketX;
+            }
+
+            basketX = newBasketX;
+            updateBasketPosition();
+            event.preventDefault(); // Previene el scroll de la página en móvil
+        }
+    }
+
+    // Crea una nueva fruta
+    function createFruit() {
+        if (gamePaused || !gameStarted) return;
+
+        const isGood = Math.random() < currentSettings.goodBadRatio;
+        const fruitData = isGood ?
+            goodFruits[Math.floor(Math.random() * goodFruits.length)] :
+            badFruits[Math.floor(Math.random() * badFruits.length)];
+
+        const fruitEl = document.createElement('div');
+        fruitEl.classList.add('fruit', fruitData.name);
+        fruitEl.style.backgroundImage = `url('${fruitData.src}')`;
+        fruitEl.dataset.points = fruitData.points;
+        fruitEl.dataset.isGood = isGood;
+
+        // Asumimos que las frutas tienen un ancho inicial definido en CSS (ej. 30px)
+        const fruitWidth = fruitEl.offsetWidth || 30; // Usar un valor por defecto si offsetWidth no está disponible
+        const maxLeft = gameArea.offsetWidth - fruitWidth;
+        fruitEl.style.left = `${Math.random() * maxLeft}px`;
+        fruitEl.style.top = `-30px`; // Empezar por encima del área de juego
+
+        gameArea.appendChild(fruitEl);
+        fruits.push({
+            element: fruitEl,
+            y: -30 // Posición Y inicial de la fruta
+        });
+    }
+
+    // Lógica de caída de frutas y colisiones
+    function gameLoop(currentTime) {
+        if (gamePaused || !gameStarted) {
+            animationFrameId = requestAnimationFrame(gameLoop);
+            return;
         }
 
-        fruitFallSpeed = currentFruitFallSpeed; // Actualiza la variable global que usa gameLoop
-        fruitGenerationInterval = setInterval(createFruit, currentFruitGenerationDelay);
-        gameInterval = setInterval(gameLoop, GAME_LOOP_INTERVAL);
-    }
-}
+        const deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
-/**
- * Ends the current game, displays final score, and prepares for saving score.
- */
-function endGame() {
-    clearInterval(gameInterval);
-    clearInterval(fruitGenerationInterval);
-    isGameActiveFlag = false; // El juego ya no está activo
+        // Mover y verificar colisiones para cada fruta
+        fruits.forEach(fruit => {
+            // Mover la fruta hacia abajo, escalando con deltaTime para un movimiento suave
+            fruit.y += currentSettings.fruitFallSpeed * (deltaTime / 16); // 16ms ~ 1 frame a 60fps
+            fruit.element.style.top = `${fruit.y}px`;
 
-    finalScoreDisplay.textContent = score;
+            const basketRect = basket.getBoundingClientRect();
+            const fruitRect = fruit.element.getBoundingClientRect();
 
-    gameOverScreen.classList.remove('hidden');
-    pauseButton.disabled = true;
-    pauseButton.textContent = 'Pausar';
-    gameContainer.classList.remove('blurred'); // Asegúrate de quitar el blur
-
-    loadHighScores();
-    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
-}
-
-/**
- * Saves the current round's score with the user's name.
- */
-function saveCurrentScore() {
-    if (scoreSavedThisRound) {
-        alert("Your score has already been saved for this round!");
-        return;
-    }
-    if (currentGameMode === 'custom') {
-        alert("Custom Mode scores are not saved to high scores.");
-        return;
-    }
-
-    let username = usernameInput.value.trim();
-    if (username === '') {
-        username = 'Anonymous';
-    }
-
-    if (username.length > 10) {
-        username = username.substring(0, 10);
-    }
-
-    addScoreToHighScores(score, username);
-    saveHighScores();
-    loadHighScores(); // Recarga para actualizar la lista mostrada en el menú
-    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
-
-    scoreSavedThisRound = true;
-    saveScoreButton.disabled = true;
-
-    alert(`Score of ${score} saved for ${username}!`);
-}
-
-/**
- * Pauses the game and applies a visual effect.
- */
-function pauseGame() {
-    // Si el juego está activo y no está pausado y no hay pantalla de game over
-    if (isGameActiveFlag && !gamePaused && gameOverScreen.classList.contains('hidden')) {
-        clearInterval(gameInterval);
-        clearInterval(fruitGenerationInterval);
-        gamePaused = true;
-        pauseButton.textContent = 'Reanudar';
-        gameContainer.classList.add('blurred');
-        console.log("Game Paused");
-    }
-}
-
-/**
- * Resumes the game from a paused state.
- */
-function resumeGame() {
-    // Si el juego está activo y está pausado y no hay pantalla de game over
-    if (isGameActiveFlag && gamePaused && gameOverScreen.classList.contains('hidden')) {
-        startMainGameLoop();
-        gamePaused = false;
-        pauseButton.textContent = 'Pausar';
-        gameContainer.classList.remove('blurred');
-        console.log("Game Resumed");
-    }
-}
-
-/**
- * Toggles between pause and resume states.
- */
-function togglePause() {
-    // Simplificación de la condición de pausa usando isGameActiveFlag
-    if (!isGameActiveFlag || lives <= 0) { // Si el juego no está activo o ya perdiste
-        return;
-    }
-
-    if (gamePaused) {
-        resumeGame();
-    } else {
-        pauseGame();
-    }
-}
-
-// --- High Scores Management ---
-
-/**
- * Adds a new score to the high scores array and keeps it sorted.
- * Includes username and date.
- * @param {number} newScore - The score to add.
- * @param {string} username - The player's name.
- */
-function addScoreToHighScores(newScore, username) {
-    highScores.push({ score: newScore, username: username, date: new Date().toLocaleDateString('es-ES') });
-    highScores.sort((a, b) => b.score - a.score);
-}
-
-/**
- * Saves the current high scores array to the browser's local storage.
- */
-function saveHighScores() {
-    localStorage.setItem('highScores', JSON.stringify(highScores));
-}
-
-/**
- * Loads high scores from the browser's local storage.
- */
-function loadHighScores() {
-    const storedScores = localStorage.getItem('highScores');
-    highScores = storedScores ? JSON.parse(storedScores) : [];
-    highScores.sort((a, b) => b.score - a.score);
-}
-
-/**
- * Clears all high scores from local storage.
- */
-function clearAllHighScores() {
-    if (confirm("Are you sure you want to clear ALL high scores? This action is irreversible.")) {
-        localStorage.removeItem('highScores');
-        highScores = [];
-        displayHighScores();
-        highScoreDisplay.textContent = 0;
-        alert("All high scores have been cleared.");
-    }
-}
-
-/**
- * Displays the loaded high scores in the high scores menu's HTML list.
- * Now shows username.
- */
-function displayHighScores() {
-    highScoresList.innerHTML = '';
-
-    if (highScores.length === 0) {
-        highScoresList.innerHTML = '<li>No scores yet. Play to set one!</li>';
-        return;
-    }
-
-    highScores.forEach((entry, index) => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `<span>${index + 1}.</span> <span>${entry.username}</span> <span>${entry.score} points</span> <span>(${entry.date})</span>`;
-        highScoresList.appendChild(listItem);
-    });
-}
-
-// --- UI/Menu Functions ---
-
-/**
- * Hides all game screens and menus, showing only the main menu.
- */
-function showMainMenu() {
-    clearInterval(gameInterval);
-    clearInterval(fruitGenerationInterval);
-    gamePaused = false;
-    isGameActiveFlag = false; // El juego ya no está activo
-
-    gameContainer.style.display = 'none'; // Oculta el contenedor del juego
-    document.getElementById('game-controls').style.display = 'none'; // Oculta los controles móviles
-
-    gameOverScreen.classList.add('hidden');
-    optionsMenu.classList.add('hidden');
-    highscoresMenu.classList.add('hidden');
-    ratingMenu.classList.add('hidden');
-    gameModesMenu.classList.add('hidden');
-    customModeSettings.classList.add('hidden');
-    suggestionsMenu.classList.add('hidden');
-
-    mainMenu.classList.remove('hidden'); // Muestra el menú principal
-    gameContainer.classList.remove('blurred'); // Asegúrate de quitar el blur
-    fallingFruits.forEach(fruit => fruit.element.remove()); // Limpia las frutas al volver al menú
-    fallingFruits = [];
-}
-
-/**
- * Shows the game modes menu and hides other menus.
- * Also initializes hover listeners for descriptions.
- */
-function showGameModesMenu() {
-    mainMenu.classList.add('hidden');
-    optionsMenu.classList.add('hidden');
-    highscoresMenu.classList.add('hidden');
-    ratingMenu.classList.add('hidden');
-    customModeSettings.classList.add('hidden');
-    suggestionsMenu.classList.add('hidden');
-    gameModesMenu.classList.remove('hidden'); // Muestra el menú de modos
-
-    setupModeDescriptions();
-    hideAllModeDescriptions(); // Asegura que no haya descripciones visibles al abrir
-}
-
-/**
- * Hides all game mode descriptions.
- */
-function hideAllModeDescriptions() {
-    document.querySelectorAll('.mode-description').forEach(desc => {
-        desc.classList.remove('visible');
-    });
-}
-
-/**
- * Sets up events to show/hide descriptions when hovering over mode buttons.
- * Usa un enfoque para evitar listeners duplicados.
- */
-function setupModeDescriptions() {
-    const modeItems = [
-        { button: modeNormalButton, description: descNormal },
-        { button: modeSurvivalButton, description: descSurvival },
-        { button: modeCustomButton, description: descCustom },
-        { button: modeComingSoonButton, description: descComingSoon }
-    ];
-
-    modeItems.forEach(item => {
-        const { button, description } = item;
-
-        // Eliminar listeners previos si existen para evitar duplicados
-        const oldMouseEnter = button.__hoverEnterListener;
-        const oldMouseLeave = button.__hoverLeaveListener;
-        const oldClickListener = button.__clickListener;
-
-        if (oldMouseEnter) button.removeEventListener('mouseenter', oldMouseEnter);
-        if (oldMouseLeave) button.removeEventListener('mouseleave', oldMouseLeave);
-        if (oldClickListener) button.removeEventListener('click', oldClickListener);
-
-        // Nuevos listeners
-        const newMouseEnter = () => {
-            hideAllModeDescriptions(); // Oculta otras descripciones
-            description.classList.add('visible');
-        };
-        const newMouseLeave = () => {
-            description.classList.remove('visible');
-        };
-        const newClick = (event) => {
-            // Alterna la visibilidad al hacer click
-            if (description.classList.contains('visible')) {
-                description.classList.remove('visible');
-            } else {
-                hideAllModeDescriptions();
-                description.classList.add('visible');
-            }
-        };
-
-        button.addEventListener('mouseenter', newMouseEnter);
-        button.addEventListener('mouseleave', newMouseLeave);
-        button.addEventListener('click', newClick);
-
-        // Guardar las referencias a los listeners para futuras remociones
-        button.__hoverEnterListener = newMouseEnter;
-        button.__hoverLeaveListener = newMouseLeave;
-        button.__clickListener = newClick;
-    });
-}
-
-/**
- * Hides the loading screen and reveals the main menu.
- */
-function hideLoadingScreenAndShowMenu() {
-    loadingScreen.style.opacity = '0';
-    setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        mainMenu.classList.remove('hidden');
-    }, 500); // Coincide con la duración de la transición CSS
-}
-
-/**
- * Configures the interactivity and display of rating stars.
- */
-function setupRatingStars() {
-    const stars = starsContainer.children;
-    let currentRating = parseInt(userRating);
-
-    function updateStars(rating) {
-        for (let i = 0; i < stars.length; i++) {
-            if (i < rating) {
-                stars[i].classList.add('active');
-            } else {
-                stars[i].classList.remove('active');
-            }
-        }
-        ratingMessage.textContent = rating > 0 ? 'Thanks for your feedback!' : 'Click a star to rate!';
-    }
-
-    updateStars(currentRating); // Inicializa las estrellas con la calificación guardada
-
-    // Asigna el evento click a cada estrella
-    for (let i = 0; i < stars.length; i++) {
-        stars[i].onclick = function() {
-            const value = parseInt(this.dataset.value);
-            userRating = value;
-            localStorage.setItem('userRating', userRating);
-            updateStars(userRating);
-        };
-    }
-}
-
-// --- Suggestions Management ---
-
-/**
- * Displays the suggestions menu and hides others.
- */
-function showSuggestionsMenu() {
-    mainMenu.classList.add('hidden');
-    suggestionsMenu.classList.remove('hidden');
-    suggestionTextarea.value = ''; // Limpia el textarea al abrir
-    updateCharCount();
-    suggestionTextarea.focus(); // Enfoca el textarea para empezar a escribir
-}
-
-/**
- * Updates the character count for the suggestion textarea.
- */
-function updateCharCount() {
-    const currentLength = suggestionTextarea.value.length;
-    const maxLength = suggestionTextarea.maxLength;
-    charCountSpan.textContent = `${currentLength}/${maxLength} caracteres`;
-}
-
-/**
- * Handles the submission of the suggestion asynchronously to Formspree.
- * @param {Event} event - The form submission event.
- */
-async function submitSuggestion(event) {
-    event.preventDefault(); // Previene la recarga por defecto del formulario
-
-    const suggestion = suggestionTextarea.value.trim();
-
-    if (suggestion.length < 10) {
-        alert('Please write a more detailed suggestion (minimum 10 characters).');
-        return;
-    }
-
-    if (suggestion.length > 500) {
-        alert('Your suggestion is too long. Please shorten it to 500 characters.');
-        return;
-    }
-
-    submitSuggestionButton.disabled = true; // Deshabilita el botón mientras se envía
-
-    try {
-        const response = await fetch(suggestionForm.action, {
-            method: suggestionForm.method,
-            body: new FormData(suggestionForm), // Envía los datos del formulario
-            headers: {
-                'Accept': 'application/json' // Para recibir una respuesta JSON de Formspree
+            // Detección de colisión simple (AABB)
+            if (
+                fruitRect.bottom >= basketRect.top &&
+                fruitRect.top <= basketRect.bottom &&
+                fruitRect.right >= basketRect.left &&
+                fruitRect.left <= basketRect.right
+            ) {
+                handleFruitCollision(fruit);
+            } else if (fruit.y > gameArea.offsetHeight) { // Si la fruta cae por debajo del gameArea
+                if (fruit.element.dataset.isGood === 'true') {
+                    loseLife(); // Solo pierdes vida si una fruta buena se cae
+                }
+                fruit.element.remove();
+                fruits = fruits.filter(f => f !== fruit); // Eliminar la fruta del array
             }
         });
 
-        if (response.ok) {
-            alert('¡Gracias por tu sugerencia! Ha sido enviada con éxito.');
-            suggestionTextarea.value = '';
-            updateCharCount();
-            showMainMenu(); // Vuelve al menú principal
-        } else {
-            // Manejo de errores de Formspree
-            alert('Hubo un error al enviar tu sugerencia. Por favor, inténtalo de nuevo.');
-            console.error('Formspree error:', await response.json());
+        // Limpiar el array de frutas de elementos que ya no están en el DOM
+        // Esto es una medida de seguridad, ya que los removemos explícitamente arriba.
+        fruits = fruits.filter(fruit => gameArea.contains(fruit.element));
+
+        animationFrameId = requestAnimationFrame(gameLoop); // Solicitar el siguiente frame
+    }
+
+    // Manejar colisión de fruta con canasta
+    function handleFruitCollision(fruit) {
+        score += parseInt(fruit.element.dataset.points);
+        if (fruit.element.dataset.isGood === 'false') {
+            loseLife(); // Pierdes vida si atrapas una fruta mala
+            showExplosion(fruit.element.style.left, fruit.element.style.top); // Mostrar explosión
         }
-    } catch (error) {
-        // Manejo de errores de red
-        alert('Hubo un problema de conexión al enviar tu sugerencia. Inténtalo más tarde.');
-        console.error('Network error:', error);
-    } finally {
-        submitSuggestionButton.disabled = false; // Vuelve a habilitar el botón
-    }
-}
-
-
-// --- Global Event Listeners ---
-
-// Keyboard events for basket movement
-document.addEventListener('keydown', moveBasket);
-
-// Game button events
-restartButton.addEventListener('click', startGame);
-pauseButton.addEventListener('click', togglePause);
-saveScoreButton.addEventListener('click', saveCurrentScore);
-
-// Main Menu button events
-modesButton.addEventListener('click', showGameModesMenu);
-
-optionsButton.addEventListener('click', () => {
-    mainMenu.classList.add('hidden');
-    optionsMenu.classList.remove('hidden');
-    difficultySelect.value = currentDifficulty; // Establece la dificultad seleccionada
-});
-
-highscoresButton.addEventListener('click', () => {
-    mainMenu.classList.add('hidden');
-    highscoresMenu.classList.remove('hidden');
-    loadHighScores(); // Carga las puntuaciones antes de mostrarlas
-    displayHighScores(); // Muestra las puntuaciones
-});
-
-ratingButton.addEventListener('click', () => {
-    mainMenu.classList.add('hidden');
-    ratingMenu.classList.remove('hidden');
-    setupRatingStars(); // Configura las estrellas de calificación
-});
-
-suggestionsButton.addEventListener('click', showSuggestionsMenu);
-
-// Game Modes Menu button events
-modeNormalButton.addEventListener('click', () => {
-    currentGameMode = 'normal';
-    startGame();
-});
-
-modeSurvivalButton.addEventListener('click', () => {
-    currentGameMode = 'survival';
-    startGame();
-});
-
-modeComingSoonButton.addEventListener('click', () => {
-    alert('More game modes coming soon! Stay tuned!');
-});
-
-// Custom Mode button and slider events
-modeCustomButton.addEventListener('click', () => {
-    gameModesMenu.classList.add('hidden');
-    customModeSettings.classList.remove('hidden');
-    // Inicializa los sliders con los valores actuales del modo personalizado
-    customLivesInput.value = customLives;
-    customFruitSpeedInput.value = customFruitSpeed;
-    customFruitSpeedValue.textContent = customFruitSpeed;
-    customBasketSpeedInput.value = customBasketSpeed;
-    customBasketSpeedValue.textContent = customBasketSpeed;
-});
-
-customLivesInput.addEventListener('input', (event) => {
-    customLives = parseInt(event.target.value);
-});
-
-customFruitSpeedInput.addEventListener('input', (event) => {
-    customFruitSpeed = parseInt(event.target.value);
-    customFruitSpeedValue.textContent = customFruitSpeed; // Actualiza el valor mostrado
-});
-
-customBasketSpeedInput.addEventListener('input', (event) => {
-    customBasketSpeed = parseInt(event.target.value);
-    customBasketSpeedValue.textContent = customBasketSpeed; // Actualiza el valor mostrado
-});
-
-startCustomGameButton.addEventListener('click', () => {
-    currentGameMode = 'custom';
-    startGame();
-});
-
-// Botones de "Volver"
-backFromModesButton.addEventListener('click', showMainMenu);
-backFromCustomSettingsButton.addEventListener('click', showGameModesMenu); // Vuelve al menú de modos
-backFromOptionsButton.addEventListener('click', showMainMenu);
-backFromHighscoresButton.addEventListener('click', showMainMenu);
-backFromRatingButton.addEventListener('click', showMainMenu);
-backFromSuggestionsButton.addEventListener('click', showMainMenu);
-backToMenuFromGameoverButton.addEventListener('click', showMainMenu);
-
-// Clear High Scores button
-clearHighscoresButton.addEventListener('click', clearAllHighScores);
-
-// Difficulty select event
-difficultySelect.addEventListener('change', (event) => {
-    applyDifficulty(event.target.value);
-});
-
-// Suggestion textarea and form submission events
-suggestionTextarea.addEventListener('input', updateCharCount);
-suggestionForm.addEventListener('submit', submitSuggestion); // Escucha el evento submit del formulario
-
-// --- Eventos para Controles Móviles (Botones Táctiles) ---
-let touchMoveInterval = null; // Para mantener el movimiento mientras se presiona
-let currentDirection = 0;    // -1 para izquierda, 1 para derecha, 0 para no movimiento
-
-function startTouchMove(direction) {
-    // Simplificación de la condición de movimiento usando isGameActiveFlag
-    if (!isGameActiveFlag || gamePaused || lives <= 0) {
-        return;
+        fruit.element.remove(); // Eliminar la fruta del DOM
+        fruits = fruits.filter(f => f !== fruit); // Eliminar la fruta del array
+        updateHud(); // Actualizar la interfaz
     }
 
-    currentDirection = direction;
-    if (!touchMoveInterval) {
-        touchMoveInterval = setInterval(() => {
-            basketPosition += currentDirection * basketMoveSpeed;
+    // Mostrar efecto de explosión
+    function showExplosion(x, y) {
+        const explosionEl = document.createElement('div');
+        explosionEl.classList.add('explosion-effect');
+        explosionEl.style.left = x;
+        explosionEl.style.top = y;
+        gameArea.appendChild(explosionEl);
 
-            // Asegura que la canasta no se salga de los límites
-            if (basketPosition < 0) {
-                basketPosition = 0;
-            }
-            if (basketPosition > gameArea.offsetWidth - basket.offsetWidth) {
-                basketPosition = gameArea.offsetWidth - basket.offsetWidth;
-            }
-            basket.style.left = `${basketPosition}px`;
-        }, GAME_LOOP_INTERVAL); // Usa el mismo intervalo del juego para una animación fluida
+        // Eliminar la explosión después de su animación
+        explosionEl.addEventListener('animationend', () => {
+            explosionEl.remove();
+        });
     }
-}
 
-function stopTouchMove() {
-    clearInterval(touchMoveInterval);
-    touchMoveInterval = null;
-    currentDirection = 0;
-}
-
-// Event Listeners para los botones táctiles
-if (leftButton && rightButton) { // Asegúrate de que los botones existen (para evitar errores en desktop)
-    leftButton.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Evita el zoom y otros comportamientos del navegador
-        startTouchMove(-1);
-    });
-    leftButton.addEventListener('touchend', stopTouchMove);
-    leftButton.addEventListener('touchcancel', stopTouchMove); // En caso de que el toque se interrumpa
-    leftButton.addEventListener('mousedown', (e) => { // Para pruebas en desktop con ratón
-        e.preventDefault();
-        startTouchMove(-1);
-    });
-    leftButton.addEventListener('mouseup', stopTouchMove);
-    leftButton.addEventListener('mouseleave', stopTouchMove); // Detiene el movimiento si el ratón sale del botón
-
-    rightButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        startTouchMove(1);
-    });
-    rightButton.addEventListener('touchend', stopTouchMove);
-    rightButton.addEventListener('touchcancel', stopTouchMove);
-    rightButton.addEventListener('mousedown', (e) => { // Para pruebas en desktop con ratón
-        e.preventDefault();
-        startTouchMove(1);
-    });
-    rightButton.addEventListener('mouseup', stopTouchMove);
-    rightButton.addEventListener('mouseleave', stopTouchMove);
-}
-
-
-// Auto-pause when tab loses focus
-document.addEventListener('visibilitychange', () => {
-    // Solo pausa si el juego está en curso (no en un menú o pantalla de game over)
-    if (isGameActiveFlag && gameOverScreen.classList.contains('hidden')) { // Simplificado
-        if (document.hidden) {
-            pauseGame();
-        } else {
-            resumeGame();
+    // Perder vida
+    function loseLife() {
+        lives--;
+        updateHud();
+        if (lives <= 0) {
+            gameOver();
         }
     }
-});
 
-// --- Initial Setup on Page Load ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Oculta el contenedor del juego y los controles al inicio
-    gameContainer.style.display = 'none';
-    document.getElementById('game-controls').style.display = 'none';
+    // Game Over
+    function gameOver() {
+        gameStarted = false;
+        clearInterval(gameInterval); // Detener la creación de frutas
+        cancelAnimationFrame(animationFrameId); // Detener el bucle de animación
+        stopMobileMove(); // Asegurarse de detener cualquier movimiento móvil continuo
 
-    // Aplica la dificultad guardada o por defecto
-    applyDifficulty(currentDifficulty);
+        showScreen(gameOverScreen);
+        document.getElementById('final-score').textContent = score;
 
-    // Carga y muestra las puntuaciones altas
-    loadHighScores();
-    highScoreDisplay.textContent = highScores.length > 0 ? highScores[0].score : 0;
+        // Actualizar la puntuación más alta si se supera
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('highScore', highScore); // Guardar la nueva puntuación alta
+            document.getElementById('game-over-message').textContent = '¡NUEVA PUNTUACIÓN ALTA!';
+            highScoreIndicator.classList.remove('hidden'); // Asegurarse de que el indicador está visible
+        } else {
+            document.getElementById('game-over-message').textContent = 'GAME OVER';
+            // highScoreIndicator.classList.add('hidden'); // Esto podría ocultar el indicador global de high score
+            // Mejor: asegúrate de que el indicador muestre el high score existente
+            highScoreIndicator.textContent = `MEJOR PUNT.: ${highScore}`;
+            highScoreIndicator.classList.remove('hidden'); // Mostrar el high score anterior
+        }
+    }
 
-    // Retraso para la pantalla de carga antes de mostrar el menú principal
-    setTimeout(hideLoadingScreenAndShowMenu, LOADING_SCREEN_DURATION);
+    // Reiniciar juego
+    function resetGame() {
+        score = 0;
+        lives = currentSettings.maxLives; // Usar las vidas configuradas
+        fruits.forEach(fruit => fruit.element.remove()); // Eliminar todas las frutas existentes
+        fruits = [];
+        clearInterval(gameInterval);
+        cancelAnimationFrame(animationFrameId);
+        gamePaused = false;
+        gameStarted = false;
+        stopMobileMove(); // Asegurarse de detener cualquier movimiento móvil continuo
+        updateHud();
+        initializeBasketPosition(); // Reiniciar la posición de la canasta
+    }
+
+    // Iniciar juego
+    function startGame() {
+        resetGame(); // Reinicia todas las variables de juego y limpia el área
+        gameStarted = true;
+        updateHud(); // Actualiza el HUD para mostrar el estado inicial
+        gameInterval = setInterval(createFruit, currentSettings.fruitSpawnRate); // Inicia la creación de frutas
+        lastTime = performance.now(); // Reinicia el tiempo para el cálculo de deltaTime
+        animationFrameId = requestAnimationFrame(gameLoop); // Inicia el bucle de juego
+        showScreen(gameScreen); // Muestra la pantalla del juego
+    }
+
+    // Pausar/Reanudar juego
+    function togglePause() {
+        gamePaused = !gamePaused;
+        if (gamePaused) {
+            clearInterval(gameInterval); // Detener la creación de frutas
+            stopMobileMove(); // Detener movimiento continuo en móvil
+            showScreen(pauseMenu);
+        } else {
+            gameInterval = setInterval(createFruit, currentSettings.fruitSpawnRate); // Reanudar creación de frutas
+            lastTime = performance.now(); // Sincronizar el tiempo para el bucle
+            animationFrameId = requestAnimationFrame(gameLoop); // Reanudar el bucle de juego
+            showScreen(gameScreen);
+        }
+    }
+
+    // --- High Scores ---
+    function getHighScores() {
+        const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+        return scores.sort((a, b) => b.score - a.score); // Ordenar de mayor a menor
+    }
+
+    function saveHighScore(name, score) {
+        const scores = getHighScores();
+        // Asegurarse de que el nombre tenga 3 caracteres y sea en mayúsculas
+        const formattedName = name.toUpperCase().substring(0, 3);
+        scores.push({
+            name: formattedName,
+            score
+        });
+        localStorage.setItem('highScores', JSON.stringify(scores));
+        displayHighScores();
+    }
+
+    function displayHighScores() {
+        const highScoresList = document.getElementById('high-scores-list');
+        if (!highScoresList) return;
+
+        highScoresList.innerHTML = ''; // Limpiar la lista actual
+        const scores = getHighScores().slice(0, 10); // Mostrar solo el top 10
+
+        if (scores.length === 0) {
+            const li = document.createElement('li');
+            li.textContent = '¡Sé el primero en obtener una puntuación!';
+            highScoresList.appendChild(li);
+        } else {
+            scores.forEach((s, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${index + 1}.</span> ${s.name}: ${s.score}`;
+                highScoresList.appendChild(li);
+            });
+        }
+    }
+
+    // --- Lógica de movimiento móvil continuo ---
+    function startMobileMove(direction) {
+        if (!gamePaused && gameStarted && mobileMoveInterval === null) {
+            mobileMoveDirection = direction;
+            const step = 5; // Un paso más pequeño para un movimiento más suave
+            mobileMoveInterval = setInterval(() => {
+                basketX += mobileMoveDirection * step;
+                const maxBasketX = gameArea.offsetWidth - basket.offsetWidth;
+                if (basketX < 0) basketX = 0;
+                if (basketX > maxBasketX) basketX = maxBasketX;
+                updateBasketPosition();
+            }, 30); // Ajusta el intervalo para la velocidad y suavidad deseadas
+        }
+    }
+
+    function stopMobileMove() {
+        clearInterval(mobileMoveInterval);
+        mobileMoveInterval = null;
+        mobileMoveDirection = 0;
+    }
+
+
+    // --- Event Listeners ---
+
+    // Menú principal
+    startGameButton.addEventListener('click', startGame);
+    optionsButton.addEventListener('click', () => {
+        loadCustomSettings();
+        showScreen(optionsMenu);
+    });
+    highScoresButton.addEventListener('click', () => {
+        displayHighScores();
+        showScreen(highScoresMenu);
+    });
+    rateGameButton.addEventListener('click', () => showScreen(ratingMenu));
+    suggestFeatureButton.addEventListener('click', () => showScreen(suggestionMenu));
+
+    // Menú de opciones
+    backToMainFromOptionsButton.addEventListener('click', () => {
+        showScreen(mainMenu);
+        resetGame(); // Asegurarse de que el juego se reinicie al volver al menú principal
+    });
+
+    // Opciones -> Modo Personalizado
+    customModeButton.addEventListener('click', () => {
+        loadCustomSettings();
+        showScreen(customModeMenu);
+    });
+    backToOptionsFromCustomButton.addEventListener('click', () => showScreen(optionsMenu));
+    applyCustomSettingsButton.addEventListener('click', applySettings); // Llama a applySettings
+
+    // Eventos para sliders de opciones (actualizar valores mostrados)
+    if (fruitFallSpeedRange) {
+        fruitFallSpeedRange.addEventListener('input', (e) => {
+            document.getElementById('fruit-fall-speed-value').textContent = parseFloat(e.target.value).toFixed(1);
+        });
+    }
+    if (fruitSpawnRateRange) {
+        fruitSpawnRateRange.addEventListener('input', (e) => {
+            document.getElementById('fruit-spawn-rate-value').textContent = parseInt(e.target.value);
+        });
+    }
+    if (maxLivesNumber) {
+        maxLivesNumber.addEventListener('input', (e) => {
+            document.getElementById('max-lives-value').textContent = parseInt(e.target.value);
+        });
+    }
+    if (basketSizeRange) {
+        basketSizeRange.addEventListener('input', (e) => {
+            document.getElementById('basket-size-value').textContent = parseInt(e.target.value);
+        });
+    }
+    if (goodBadRatioRange) {
+        goodBadRatioRange.addEventListener('input', (e) => {
+            document.getElementById('good-bad-ratio-value').textContent = (parseFloat(e.target.value) * 100).toFixed(0) + '% Buenas';
+        });
+    }
+
+    // High Scores
+    backToMainFromHighScoresButton.addEventListener('click', () => showScreen(mainMenu));
+
+    // Calificación
+    stars.forEach(star => {
+        star.addEventListener('click', (e) => {
+            const rating = parseInt(e.target.dataset.value);
+            stars.forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.value) <= rating);
+            });
+            ratingMessage.textContent = `¡Gracias por tu calificación de ${rating} estrellas!`;
+        });
+    });
+    backToMainFromRatingButton.addEventListener('click', () => {
+        showScreen(mainMenu);
+        stars.forEach(s => s.classList.remove('active')); // Resetear estrellas al volver al menú
+        ratingMessage.textContent = 'Haz clic en una estrella para calificar.';
+    });
+
+    // Sugerencias
+    if (suggestionText) {
+        suggestionText.addEventListener('input', () => {
+            const remaining = 200 - suggestionText.value.length;
+            charCount.textContent = `${remaining} caracteres restantes`;
+        });
+    }
+    if (suggestionForm) {
+        suggestionForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevenir el envío por defecto del formulario
+            alert('¡Gracias por tu sugerencia!');
+            if (suggestionText) suggestionText.value = '';
+            if (charCount) charCount.textContent = '200 caracteres restantes';
+            showScreen(mainMenu);
+        });
+    }
+    if (backToMainFromSuggestionButton) {
+        backToMainFromSuggestionButton.addEventListener('click', () => {
+            showScreen(mainMenu);
+            if (suggestionText) suggestionText.value = '';
+            if (charCount) charCount.textContent = '200 caracteres restantes';
+        });
+    }
+
+    // Game Over
+    restartGameButton.addEventListener('click', startGame);
+    saveScoreButton.addEventListener('click', () => {
+        const playerNameInput = document.getElementById('player-name');
+        let playerName = playerNameInput.value.trim();
+        if (playerName === '') {
+            playerName = 'ANÓ'; // Valor por defecto si no se ingresa nombre
+        }
+        saveHighScore(playerName, score);
+        showScreen(highScoresMenu);
+        playerNameInput.value = ''; // Limpiar el input después de guardar
+    });
+
+    // Controles de juego (ratón y toque en el área de juego)
+    gameArea.addEventListener('mousemove', handleMouseMove);
+    gameArea.addEventListener('touchmove', handleTouchMove);
+
+    // Botón de pausa en el juego
+    if (pauseButton) {
+        pauseButton.addEventListener('click', togglePause);
+    }
+
+    // Botones del menú de pausa
+    if (resumeButton) {
+        resumeButton.addEventListener('click', togglePause);
+    }
+    if (restartFromPauseButton) {
+        restartFromPauseButton.addEventListener('click', startGame);
+    }
+    if (backToMainFromPauseButton) {
+        backToMainFromPauseButton.addEventListener('click', () => {
+            resetGame(); // Reiniciar completamente el juego
+            showScreen(mainMenu);
+        });
+    }
+
+    // Controles móviles (ahora con movimiento continuo al mantener presionado)
+    if (mobileLeftButton) {
+        mobileLeftButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startMobileMove(-1);
+        });
+        mobileLeftButton.addEventListener('touchend', stopMobileMove);
+        mobileLeftButton.addEventListener('touchcancel', stopMobileMove);
+    }
+
+    if (mobileRightButton) {
+        mobileRightButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startMobileMove(1);
+        });
+        mobileRightButton.addEventListener('touchend', stopMobileMove);
+        mobileRightButton.addEventListener('touchcancel', stopMobileMove);
+    }
+
+    // --- Inicialización al cargar la página ---
+    showScreen(loadingScreen); // Mostrar pantalla de carga primero
+
+    preloadImages(allAssetsToPreload, () => {
+        // Una vez que todas las imágenes estén cargadas
+        if (loadingScreen) loadingScreen.classList.add('hidden'); // Ocultar pantalla de carga
+        if (mainMenu) mainMenu.classList.remove('hidden'); // Mostrar menú principal
+        updateHud(); // Inicializar el HUD
+        initializeBasketPosition(); // Posicionar la canasta
+    });
 });

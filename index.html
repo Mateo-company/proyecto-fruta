@@ -3,163 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atrapa la Fruta</title>
+    <title>Juego de Recoger Frutas</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body>
 
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
-        <p>Cargando juego...</p>
+        <p>Cargando assets...</p>
     </div>
-
-    <div id="main-menu" class="menu hidden">
-        <h1>Atrapa la Fruta</h1>
-        <button id="startGameButton" class="menu-button">Empezar Juego</button>
-        <button id="gameModesButton" class="menu-button">Modos de Juego</button>
-        <button id="optionsButton" class="menu-button">Opciones</button>
-        <button id="highScoresButton" class="menu-button">Puntuaciones Altas</button>
-        <button id="ratingButton" class="menu-button">Calificar Juego</button>
-        <button id="suggestionsButton" class="menu-button">Sugerencias</button>
-    </div>
-
-    <div id="game-modes-menu" class="menu hidden">
-        <h2>Modos de Juego</h2>
-        <div class="mode-selection">
-            <button class="menu-button mode-button" data-mode="normal">
-                <strong>Clásico</strong>
-                <span class="mode-description">Atrapa la fruta buena. Pierdes vidas si no la atrapas o si atrapas fruta mala.</span>
-            </button>
-            <button class="menu-button mode-button" data-mode="survival">
-                <strong>Supervivencia</strong>
-                <span class="mode-description">La velocidad aumenta constantemente. ¡Atrapa solo la fruta buena y sobrevive lo más que puedas!</span>
-            </button>
-            <button class="menu-button mode-button coming-soon-button" data-mode="speedrun">
-                <strong>Contrarreloj</strong>
-                <span class="mode-description">Compites contra el reloj para alcanzar una puntuación objetivo lo más rápido posible.</span>
-            </button>
-            <button class="menu-button mode-button" data-mode="zen">
-                <strong>Zen</strong>
-                <span class="mode-description">¡Relájate! Frutas lentas, vidas infinitas. Solo disfruta de la recolección.</span>
-            </button>
-            <button class="menu-button mode-button" data-mode="custom">
-                <strong>Personalizado</strong>
-                <span class="mode-description">Configura la dificultad, la velocidad de las frutas y más a tu gusto.</span>
-            </button>
-        </div>
-        <button id="backToMainFromModes" class="back-button">Atrás</button>
-    </div>
-
-    <div id="custom-mode-settings" class="menu hidden">
-        <h2>Modo Personalizado</h2>
-        <div class="setting-item">
-            <label for="initialFruitSpeed">Velocidad Inicial:</label>
-            <input type="range" id="initialFruitSpeed" min="0.5" max="5" step="0.5" value="1">
-            <span class="slider-value" id="initialFruitSpeedValue">1x</span>
-        </div>
-        <div class="setting-item">
-            <label for="speedIncreaseRate">Aumento de Velocidad:</label>
-            <input type="range" id="speedIncreaseRate" min="0.01" max="0.5" step="0.01" value="0.05">
-            <span class="slider-value" id="speedIncreaseRateValue">0.05</span>
-        </div>
-        <div class="setting-item">
-            <label for="maxLives">Vidas Máximas:</label>
-            <input type="number" id="maxLives" min="1" max="10" value="3">
-        </div>
-        <div class="setting-item">
-            <label for="fruitGenerationDelay">Retraso de Fruta (ms):</label>
-            <input type="number" id="fruitGenerationDelay" min="500" max="3000" step="100" value="1000">
-        </div>
-        <button id="startCustomGameButton" class="menu-button">¡Jugar!</button>
-        <button id="backToModesFromCustom" class="back-button">Atrás</button>
-    </div>
-
-    <div id="options-menu" class="menu hidden">
-        <h2>Opciones</h2>
-        <div class="setting-item">
-            <label for="musicVolume">Volumen de Música:</label>
-            <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.5">
-            <span class="slider-value" id="musicVolumeValue">50%</span>
-        </div>
-        <div class="setting-item">
-            <label for="sfxVolume">Volumen de SFX:</label>
-            <input type="range" id="sfxVolume" min="0" max="1" step="0.05" value="0.7">
-            <span class="slider-value" id="sfxVolumeValue">70%</span>
-        </div>
-        <div class="setting-item">
-            <label for="difficulty">Dificultad Visual:</label>
-            <select id="difficulty">
-                <option value="easy">Fácil</option>
-                <option value="normal" selected>Normal</option>
-                <option value="hard">Difícil</option>
-            </select>
-        </div>
-        <button id="backToMainFromOptions" class="back-button">Atrás</button>
-    </div>
-
-    <div id="highscores-menu" class="menu hidden">
-        <h2>Puntuaciones Altas</h2>
-        <ol id="high-scores-list">
-            </ol>
-        <button id="clearHighScoresButton" class="menu-button clear-button">Limpiar Puntuaciones</button>
-        <button id="backToMainFromHighScores" class="back-button">Atrás</button>
-    </div>
-
-    <div id="rating-menu" class="menu hidden">
-        <h2>Califica el Juego</h2>
-        <p>¡Tu opinión nos importa! Ayúdanos a mejorar el juego.</p>
-        <div id="stars-container" class="stars-container">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-        </div>
-        <p id="rating-message"></p>
-        <button id="submitRatingButton" class="menu-button">Enviar Calificación</button>
-        <button id="backToMainFromRating" class="back-button">Atrás</button>
-    </div>
-
-    <div id="suggestions-menu" class="menu hidden">
-        <h2>Envía una Sugerencia</h2>
-        <p>¿Tienes ideas para mejorar el juego? ¡Compártelas con nosotros!</p>
-        <form id="suggestion-form">
-            <textarea id="suggestion-text" placeholder="Escribe tu sugerencia aquí..." maxlength="500"></textarea>
-            <span id="char-count" class="char-count">0/500 caracteres</span>
-            <button type="submit" class="menu-button">Enviar Sugerencia</button>
-        </form>
-        <button id="backToMainFromSuggestions" class="back-button">Atrás</button>
-    </div>
-
 
     <div id="game-container" class="game-container hidden">
         <div class="game-hud">
-            <p class="score-display">Puntuación: <span id="score-display">0</span></p>
-            <p class="lives-display">Vidas: <span id="lives-display">3</span></p>
-            <p class="high-score-indicator">Mejor: <span id="high-score-indicator">0</span></p>
-            <button id="pauseButton" class="game-button">Pausar</button>
+            <div class="score-display">PUNTOS: <span id="score">0</span></div>
+            <div class="lives-display">VIDAS: <span id="lives">3</span></div>
+            <div class="high-score-indicator hidden">MEJOR PUNT.: <span id="high-score">0</span></div>
         </div>
-        <div id="game-area" class="game-area">
-            <div id="basket" class="basket"></div>
+
+        <div id="game-area">
+            <div id="basket"></div>
+            <button id="pause-button" class="game-button">PAUSA</button>
         </div>
+
         <div id="mobile-controls" class="game-controls">
-            <button id="leftButton" class="mobile-button left">◀</button>
-            <button id="rightButton" class="mobile-button right">▶</button>
+            <button id="mobile-left-button" class="mobile-button">&lt;</button>
+            <button id="mobile-right-button" class="mobile-button">&gt;</button>
         </div>
-    </div>
 
-    <div id="game-over-screen" class="menu game-over-screen hidden">
-        <h2>¡Juego Terminado!</h2>
-        <p>Tu puntuación final: <span id="final-score">0</span></p>
-        <div class="score-save-section">
-            <label for="playerName">Introduce tus iniciales (3 letras):</label>
-            <input type="text" id="playerName" maxlength="3" placeholder="ABC">
-            <button id="saveScoreButton" class="game-button">Guardar Puntuación</button>
-        </div>
-        <button id="playAgainButton" class="game-button">Jugar de Nuevo</button>
-        <button id="backToMainFromGameOver" class="back-button">Menú Principal</button>
-    </div>
-
-    <script src="script.js"></script>
+        </div> <script src="script.js"></script>
 </body>
 </html>
